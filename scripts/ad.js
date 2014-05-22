@@ -13,5 +13,12 @@
 		this.ctx = this.parent.getContext('2d');
 	};
 
+	var generateColors = function(nb){
+		// generate 1 random color
+		// generate its opposite color
+		// generate nb-2 color equaly dispatched between the boundaries
+		// lerp?
+	}
+
 	window.Ad = ad;
 })();
