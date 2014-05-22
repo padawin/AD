@@ -1,5 +1,5 @@
-(function(){
-	var ad = function(parent){
+(function() {
+	var ad = function(parent) {
 		if (parent.tagName != 'CANVAS') {
 			throw 'The parent element must be a canvas tag';
 		}
