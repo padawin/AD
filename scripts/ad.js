@@ -59,14 +59,15 @@
 
 		this.parent = parent;
 		this.ctx = this.parent.getContext('2d');
+		this._controlButtons = [],
 		_init.apply(this, [4, 4]);
 	};
 
 	var _init = function(gridWidth, nbColors) {
-		var colors = _generateColors.apply(this, [nbColors]),
-			grid = _generateGrid.apply(this, [gridWidth, nbColors]);
-
-		_displayGrid.apply(this, [grid, colors]);
+		_generateColors.apply(this, [nbColors]);
+		_generateGrid.apply(this, [gridWidth, nbColors]);
+		_displayGrid.apply(this, [true]);
+		_setEvents.apply(this);
 	};
 
 	var _randomInt = function(maxExcluded) {
@@ -114,7 +115,7 @@
 			];
 		}
 
-		return colors;
+		this.colors = colors;
 	};
 
 	/**
@@ -124,49 +125,129 @@
 	 * integer corresponding to the cell's color index (0, nbColors - 1)
 	 */
 	var _generateGrid = function(width, nbColors) {
-		var grid = [],
-			x = 0,
+		var x = 0,
 			y;
 
+		this.grid = [];
+
 		for (; x < width; x++) {
-			grid[x] = [];
+			this.grid[x] = [];
 			for (y = 0; y < width; y++) {
-				grid[x][y] = _randomInt(nbColors);
+				this.grid[x][y] = _randomInt(nbColors);
 			}
 		}
-
-		return grid;
 	};
 
 	/**
 	 * Display the grid in the canvas
 	 */
-	var _displayGrid = function(grid, colors) {
+	var _displayGrid = function(init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
 			canvasHeight = this.ctx.canvas.clientHeight,
-			gridWidth = grid[0].length,
-			cellSize = canvasWidth / (gridWidth + 2),
-			x, y,
+			gridWidth = this.grid[0].length,
+			x, y, contX, contY,
 			color,
 			_displayCell;
 
-		_displayCell = function(grid, color, x, y) {
-			color = colors[grid[x][y]];
+		this.cellSize = canvasWidth / (gridWidth + 2);
+
+		_displayCell = function(x, y) {
+			var color = this.colors[this.grid[x][y]];
 			this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-			this.ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, cellSize, cellSize);
+			this.ctx.fillRect((x + 1) * this.cellSize, (y + 1) * this.cellSize, this.cellSize, this.cellSize);
 		};
 
+
 		for (x = 0; x < gridWidth; x++) {
-			// control buttons
-			this.ctx.drawImage(controls[0][0], (x + 1) * cellSize, 0, cellSize, cellSize);
-			this.ctx.drawImage(controls[1][0], canvasWidth - cellSize, (x + 1) * cellSize, cellSize, cellSize);
-			this.ctx.drawImage(controls[2][0], (x + 1) * cellSize, canvasHeight - cellSize, cellSize, cellSize);
-			this.ctx.drawImage(controls[3][0], 0, (x + 1) * cellSize, cellSize, cellSize);
+			if (init) {
+				// control buttons
+				// to factorize in a loop?
+				contX = (x + 1) * this.cellSize;
+				contY = 0;
+				this._controlButtons.push([contX, contY]);
+				this.ctx.drawImage(controls[0][0], contX, contY, this.cellSize, this.cellSize);
+				this._controlButtons.push([contY, contX]);
+				this.ctx.drawImage(controls[3][0], contY, contX, this.cellSize, this.cellSize);
+				contX = canvasWidth - this.cellSize;
+				contY = (x + 1) * this.cellSize;
+				this._controlButtons.push([contX, contY]);
+				this.ctx.drawImage(controls[1][0], contX, contY, this.cellSize, this.cellSize);
+				this._controlButtons.push([contY, contX]);
+				this.ctx.drawImage(controls[2][0], contY, contX, this.cellSize, this.cellSize);
+			}
 
 			for (y = 0; y < gridWidth; y++) {
-				_displayCell.apply(this, [grid, color, x, y]);
+				_displayCell.apply(this, [x, y]);
 			}
 		}
+	};
+
+	var _setEvents = function() {
+		var _onControl = function(x, y) {
+			var b, nbButtons = this._controlButtons.length;
+
+			for (b = 0; b < nbButtons; b++) {
+				if (
+					this._controlButtons[b][0] <= x
+					&& x <= this._controlButtons[b][0] + this.cellSize
+					&& this._controlButtons[b][1] <= y
+					&& y <= this._controlButtons[b][1] + this.cellSize
+				) {
+					break;
+				}
+			}
+
+			return b == nbButtons ? null : b;
+		};
+
+		B.addEvent(this.parent, 'click', function(e){
+			var button = _onControl.apply(this, [e.layerX, e.layerY]),
+				_shiftDown, _shiftRight, _shiftLeft, _shiftUp;
+			if (button == null) return;
+
+			_shiftDown = function(col) {
+				var last = this.grid[col][this.grid[col].length - 1];
+				this.grid[col].pop();
+				this.grid[col].unshift(last);
+			};
+			_shiftRight = function(row) {
+				var old1, old2 = -1, r, last = this.grid.length - 1;
+				for (r in this.grid) {
+					old1 = this.grid[r][row];
+					this.grid[r][row] = ~old2 ? old2 : this.grid[(r + last) % this.grid.length][row];
+					old2 = old1;
+				}
+			};
+			_shiftUp = function(col) {
+				var first = this.grid[col][0];
+				this.grid[col].shift();
+				this.grid[col].push(first);
+			};
+			_shiftLeft = function(row) {
+				var r, first = this.grid[0][row];
+				for (r in this.grid) {
+					this.grid[r][row] = this.grid[(parseInt(r) + 1) % this.grid.length][row];
+				}
+				this.grid[this.grid.length - 1][row] = first;
+			};
+
+			switch (button % 4) {
+				case 0:
+					_shiftDown.apply(this, [button/4]);
+					break;
+				case 1:
+					_shiftRight.apply(this, [0|button/4]);
+					break;
+				case 2:
+					_shiftLeft.apply(this, [0|button/4]);
+					break;
+				case 3:
+					_shiftUp.apply(this, [0|button/4]);
+					break;
+			};
+
+			_displayGrid.apply(this, [false]);
+		}.bind(this));
 	};
 
 	window.Ad = ad;
