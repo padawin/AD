@@ -20,5 +20,9 @@
 		// lerp?
 	}
 
+	var _randomInt = function(maxExcluded) {
+		return 0 | Math.random() * maxExcluded;
+	};
+
 	window.Ad = ad;
 })();
