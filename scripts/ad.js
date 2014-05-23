@@ -126,8 +126,7 @@
 			canvasHeight = this.ctx.canvas.clientHeight,
 			gridWidth = grid[0].length,
 			cellSize = canvasWidth / (gridWidth + 2),
-			x = 0,
-			y,
+			x, y,
 			color,
 			_displayCell;
 
@@ -137,7 +136,7 @@
 			this.ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, cellSize, cellSize);
 		};
 
-		for (; x < gridWidth; x++) {
+		for (x = 0; x < gridWidth; x++) {
 			// control buttons
 			this.ctx.drawImage(controls['up'], (x + 1) * cellSize, 0, cellSize, cellSize);
 			this.ctx.drawImage(controls['right'], canvasWidth - cellSize, (x + 1) * cellSize, cellSize, cellSize);
