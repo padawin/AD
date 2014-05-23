@@ -229,8 +229,7 @@
 				this.grid[col].push(first);
 			};
 			_shiftLeft = function(row) {
-				var r,
-					first = this.grid[0][row];
+				var r, first = this.grid[0][row];
 				for (r in this.grid) {
 					this.grid[r][row] = this.grid[(parseInt(r) + 1) % this.grid.length][row];
 				}
