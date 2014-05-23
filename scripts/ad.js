@@ -1,15 +1,35 @@
 (function() {
-	var controls = {
-			'up': document.createElement('img'),
-			'right': document.createElement('img'),
-			'down': document.createElement('img'),
-			'left': document.createElement('img')
-		},
-		arrow = document.createElement('canvas'),
+	var arrow = document.createElement('canvas'),
 		controlSize = 100,
 		controlThird = controlSize / 3,
 		controlTwoThird = controlThird * 2,
 		controlHalf = controlSize / 2,
+		controls = [
+			[
+				document.createElement('img'),
+				[controlThird, controlThird],
+				[controlTwoThird, controlThird],
+				[controlHalf, controlTwoThird]
+			],
+			[
+				document.createElement('img'),
+				[controlTwoThird, controlThird],
+				[controlTwoThird, controlTwoThird],
+				[controlThird, controlHalf]
+			],
+			[
+				document.createElement('img'),
+				[controlThird, controlTwoThird],
+				[controlTwoThird, controlTwoThird],
+				[controlHalf, controlThird]
+			],
+			[
+				document.createElement('img'),
+				[controlThird, controlThird],
+				[controlThird, controlTwoThird],
+				[controlTwoThird, controlHalf]
+			]
+		],
 		ctx,
 		c;
 
@@ -20,16 +40,16 @@
 	arrow.width = arrow.height = controlSize;
 	ctx = arrow.getContext('2d');
 
-	ctx.fillStyle = '#888';
-
-
 	for (c in controls) {
+		ctx.fillStyle = '#888';
+		ctx.clearRect (0, 0, controlSize, controlSize);
 		ctx.strokeRect(0, 0, controlSize, controlSize);
-		ctx.moveTo(controlThird, controlThird);
-		ctx.lineTo(controlTwoThird, controlThird);
-		ctx.lineTo(controlHalf, controlTwoThird);
+		ctx.beginPath();
+		ctx.moveTo(controls[c][1][0], controls[c][1][1]);
+		ctx.lineTo(controls[c][2][0], controls[c][2][1]);
+		ctx.lineTo(controls[c][3][0], controls[c][3][1]);
 		ctx.fill();
-		controls[c].src = arrow.toDataURL("image/png").replace("image/png", "image/octet-stream");
+		controls[c][0].src = arrow.toDataURL("image/png").replace("image/png", "image/octet-stream");
 	}
 
 	var ad = function(parent) {
@@ -138,10 +158,10 @@
 
 		for (x = 0; x < gridWidth; x++) {
 			// control buttons
-			this.ctx.drawImage(controls['up'], (x + 1) * cellSize, 0, cellSize, cellSize);
-			this.ctx.drawImage(controls['right'], canvasWidth - cellSize, (x + 1) * cellSize, cellSize, cellSize);
-			this.ctx.drawImage(controls['down'], (x + 1) * cellSize, canvasHeight - cellSize, cellSize, cellSize);
-			this.ctx.drawImage(controls['left'], 0, (x + 1) * cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls[0][0], (x + 1) * cellSize, 0, cellSize, cellSize);
+			this.ctx.drawImage(controls[1][0], canvasWidth - cellSize, (x + 1) * cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls[2][0], (x + 1) * cellSize, canvasHeight - cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls[3][0], 0, (x + 1) * cellSize, cellSize, cellSize);
 
 			for (y = 0; y < gridWidth; y++) {
 				_displayCell.apply(this, [grid, color, x, y]);
