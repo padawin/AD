@@ -211,15 +211,10 @@
 				this.grid[col].unshift(last);
 			};
 			_shiftRight = function(row) {
-				var old1, old2, r;
+				var old1, old2 = -1, r, last = this.grid.length - 1;
 				for (r in this.grid) {
 					old1 = this.grid[r][row];
-					if (old2 != null) {
-						this.grid[r][row] = old2;
-					}
-					else {
-						this.grid[r][row] = this.grid[(r - 1 + this.grid.length) % this.grid.length][row];
-					}
+					this.grid[r][row] = ~old2 ? old2 : this.grid[(r + last) % this.grid.length][row];
 					old2 = old1;
 				}
 			};
