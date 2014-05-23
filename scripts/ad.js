@@ -138,6 +138,12 @@
 		};
 
 		for (; x < gridWidth; x++) {
+			// control buttons
+			this.ctx.drawImage(controls['up'], (x + 1) * cellSize, 0, cellSize, cellSize);
+			this.ctx.drawImage(controls['right'], canvasWidth - cellSize, (x + 1) * cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls['down'], (x + 1) * cellSize, canvasHeight - cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls['left'], 0, (x + 1) * cellSize, cellSize, cellSize);
+
 			for (y = 0; y < gridWidth; y++) {
 				_displayCell.apply(this, [grid, color, x, y]);
 			}
