@@ -59,7 +59,7 @@
 
 		this.parent = parent;
 		this.ctx = this.parent.getContext('2d');
-		this._controlButtons = new Array(4),
+		this._controlButtons = [],
 		_init.apply(this, [4, 4]);
 	};
 
@@ -67,7 +67,7 @@
 		var colors = _generateColors.apply(this, [nbColors]),
 			grid = _generateGrid.apply(this, [gridWidth, nbColors]);
 
-		_displayGrid.apply(this, [grid, colors]);
+		_displayGrid.apply(this, [grid, colors, true]);
 	};
 
 	var _randomInt = function(maxExcluded) {
@@ -142,7 +142,7 @@
 	/**
 	 * Display the grid in the canvas
 	 */
-	var _displayGrid = function(grid, colors) {
+	var _displayGrid = function(grid, colors, init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
 			canvasHeight = this.ctx.canvas.clientHeight,
 			gridWidth = grid[0].length,
@@ -160,20 +160,22 @@
 
 
 		for (x = 0; x < gridWidth; x++) {
-			// control buttons
-			// to factorize in a loop?
-			contX = (x + 1) * this.cellSize;
-			contY = 0;
-			this._controlButtons.push([contX, contY]);
-			this.ctx.drawImage(controls[0][0], contX, contY, this.cellSize, this.cellSize);
-			this._controlButtons.push([contY, contX]);
-			this.ctx.drawImage(controls[3][0], contY, contX, this.cellSize, this.cellSize);
-			contX = canvasWidth - this.cellSize;
-			contY = (x + 1) * this.cellSize;
-			this._controlButtons.push([contX, contY]);
-			this.ctx.drawImage(controls[1][0], contX, contY, this.cellSize, this.cellSize);
-			this._controlButtons.push([contY, contX]);
-			this.ctx.drawImage(controls[2][0], contY, contX, this.cellSize, this.cellSize);
+			if (init) {
+				// control buttons
+				// to factorize in a loop?
+				contX = (x + 1) * this.cellSize;
+				contY = 0;
+				this._controlButtons.push([contX, contY]);
+				this.ctx.drawImage(controls[0][0], contX, contY, this.cellSize, this.cellSize);
+				this._controlButtons.push([contY, contX]);
+				this.ctx.drawImage(controls[3][0], contY, contX, this.cellSize, this.cellSize);
+				contX = canvasWidth - this.cellSize;
+				contY = (x + 1) * this.cellSize;
+				this._controlButtons.push([contX, contY]);
+				this.ctx.drawImage(controls[1][0], contX, contY, this.cellSize, this.cellSize);
+				this._controlButtons.push([contY, contX]);
+				this.ctx.drawImage(controls[2][0], contY, contX, this.cellSize, this.cellSize);
+			}
 
 			for (y = 0; y < gridWidth; y++) {
 				_displayCell.apply(this, [grid, color, x, y]);
