@@ -83,5 +83,23 @@
 		return grid;
 	};
 
+	var _displayGrid = function(grid, colors) {
+		var canvasWidth = this.ctx.canvas.clientWidth,
+			canvasHeight = this.ctx.canvas.clientHeight,
+			gridWidth = grid[0].length,
+			cellSize = canvasWidth / (gridWidth + 2),
+			x = 0,
+			y,
+			color;
+
+		for (; x < gridWidth; x++) {
+			for (y = 0; y < gridWidth; y++) {
+				color = colors[grid[x][y]];
+				this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+				this.ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, cellSize, cellSize);
+			}
+		}
+	};
+
 	window.Ad = ad;
 })();
