@@ -62,5 +62,26 @@
 		return colors;
 	};
 
+	/**
+	 * Generate the grid from a width (the grid is a square) and a number of
+	 * colors.
+	 * The returned grid is a 2 dimensions array containing, for each cell, an
+	 * integer corresponding to the cell's color index (0, nbColors - 1)
+	 */
+	var _generateGrid = function(width, nbColors) {
+		var grid = [],
+			x = 0,
+			y;
+
+		for (; x < width; x++) {
+			grid[x] = [];
+			for (y = 0; y < width; y++) {
+				grid[x][y] = _randomInt(nbColors);
+			}
+		}
+
+		return grid;
+	};
+
 	window.Ad = ad;
 })();
