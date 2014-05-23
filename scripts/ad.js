@@ -145,23 +145,24 @@
 		var canvasWidth = this.ctx.canvas.clientWidth,
 			canvasHeight = this.ctx.canvas.clientHeight,
 			gridWidth = grid[0].length,
-			cellSize = canvasWidth / (gridWidth + 2),
 			x, y,
 			color,
 			_displayCell;
 
+		this.cellSize = canvasWidth / (gridWidth + 2);
+
 		_displayCell = function(grid, color, x, y) {
 			color = colors[grid[x][y]];
 			this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-			this.ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, cellSize, cellSize);
+			this.ctx.fillRect((x + 1) * this.cellSize, (y + 1) * this.cellSize, this.cellSize, this.cellSize);
 		};
 
 		for (x = 0; x < gridWidth; x++) {
 			// control buttons
-			this.ctx.drawImage(controls[0][0], (x + 1) * cellSize, 0, cellSize, cellSize);
-			this.ctx.drawImage(controls[1][0], canvasWidth - cellSize, (x + 1) * cellSize, cellSize, cellSize);
-			this.ctx.drawImage(controls[2][0], (x + 1) * cellSize, canvasHeight - cellSize, cellSize, cellSize);
-			this.ctx.drawImage(controls[3][0], 0, (x + 1) * cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls[0][0], (x + 1) * this.cellSize, 0, this.cellSize, this.cellSize);
+			this.ctx.drawImage(controls[1][0], canvasWidth - this.cellSize, (x + 1) * this.cellSize, this.cellSize, this.cellSize);
+			this.ctx.drawImage(controls[2][0], (x + 1) * this.cellSize, canvasHeight - this.cellSize, this.cellSize, this.cellSize);
+			this.ctx.drawImage(controls[3][0], 0, (x + 1) * this.cellSize, this.cellSize, this.cellSize);
 
 			for (y = 0; y < gridWidth; y++) {
 				_displayCell.apply(this, [grid, color, x, y]);
