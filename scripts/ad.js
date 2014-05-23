@@ -97,13 +97,18 @@
 			cellSize = canvasWidth / (gridWidth + 2),
 			x = 0,
 			y,
-			color;
+			color,
+			_displayCell;
+
+		_displayCell = function(grid, color, x, y) {
+			color = colors[grid[x][y]];
+			this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+			this.ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, cellSize, cellSize);
+		};
 
 		for (; x < gridWidth; x++) {
 			for (y = 0; y < gridWidth; y++) {
-				color = colors[grid[x][y]];
-				this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-				this.ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, cellSize, cellSize);
+				_displayCell.apply(this, [grid, color, x, y]);
 			}
 		}
 	};
