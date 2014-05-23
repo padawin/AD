@@ -40,10 +40,10 @@
 	arrow.width = arrow.height = controlSize;
 	ctx = arrow.getContext('2d');
 
+	ctx.fillStyle = '#888';
+	ctx.strokeRect(0, 0, controlSize, controlSize);
 	for (c in controls) {
-		ctx.fillStyle = '#888';
-		ctx.clearRect (0, 0, controlSize, controlSize);
-		ctx.strokeRect(0, 0, controlSize, controlSize);
+		ctx.clearRect(1, 1, controlSize - 2, controlSize - 2);
 		ctx.beginPath();
 		ctx.moveTo(controls[c][1][0], controls[c][1][1]);
 		ctx.lineTo(controls[c][2][0], controls[c][2][1]);
