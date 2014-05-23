@@ -68,6 +68,7 @@
 			grid = _generateGrid.apply(this, [gridWidth, nbColors]);
 
 		_displayGrid.apply(this, [grid, colors, true]);
+		_setEvents.apply(this);
 	};
 
 	var _randomInt = function(maxExcluded) {
@@ -181,6 +182,31 @@
 				_displayCell.apply(this, [grid, color, x, y]);
 			}
 		}
+	};
+
+	var _setEvents = function() {
+		var _onControl = function(x, y) {
+			var b, nbButtons = this._controlButtons.length;
+
+			for (b = 0; b < nbButtons; b++) {
+				if (
+					this._controlButtons[b][0] <= x
+					&& x <= this._controlButtons[b][0] + this.cellSize
+					&& this._controlButtons[b][1] <= y
+					&& y <= this._controlButtons[b][1] + this.cellSize
+				) {
+					break;
+				}
+			}
+
+			return b == nbButtons ? null : b;
+		};
+
+		B.addEvent(this.parent, 'click', function(e){
+			var button = _onControl.apply(this, [e.layerX, e.layerY]);
+			if (button == null) return;
+
+		}.bind(this));
 	};
 
 	window.Ad = ad;
