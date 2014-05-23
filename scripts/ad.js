@@ -1,4 +1,37 @@
 (function() {
+	var controls = {
+			'up': document.createElement('img'),
+			'right': document.createElement('img'),
+			'down': document.createElement('img'),
+			'left': document.createElement('img')
+		},
+		arrow = document.createElement('canvas'),
+		controlSize = 100,
+		controlThird = controlSize / 3,
+		controlTwoThird = controlThird * 2,
+		controlHalf = controlSize / 2,
+		ctx,
+		c;
+
+	if (!arrow.getContext) {
+		throw 'This browser does not support the use of canvas';
+	}
+
+	arrow.width = arrow.height = controlSize;
+	ctx = arrow.getContext('2d');
+
+	ctx.fillStyle = '#888';
+
+
+	for (c in controls) {
+		ctx.strokeRect(0, 0, controlSize, controlSize);
+		ctx.moveTo(controlThird, controlThird);
+		ctx.lineTo(controlTwoThird, controlThird);
+		ctx.lineTo(controlHalf, controlTwoThird);
+		ctx.fill();
+		controls[c].src = arrow.toDataURL("image/png").replace("image/png", "image/octet-stream");
+	}
+
 	var ad = function(parent) {
 		if (parent.tagName != 'CANVAS') {
 			throw 'The parent element must be a canvas tag';
