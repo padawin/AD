@@ -64,10 +64,9 @@
 	};
 
 	var _init = function(gridWidth, nbColors) {
-		var colors = _generateColors.apply(this, [nbColors]),
-			grid = _generateGrid.apply(this, [gridWidth, nbColors]);
-
-		_displayGrid.apply(this, [grid, colors, true]);
+		_generateColors.apply(this, [nbColors]);
+		_generateGrid.apply(this, [gridWidth, nbColors]);
+		_displayGrid.apply(this, [true]);
 		_setEvents.apply(this);
 	};
 
@@ -116,7 +115,7 @@
 			];
 		}
 
-		return colors;
+		this.colors = colors;
 	};
 
 	/**
@@ -126,35 +125,34 @@
 	 * integer corresponding to the cell's color index (0, nbColors - 1)
 	 */
 	var _generateGrid = function(width, nbColors) {
-		var grid = [],
-			x = 0,
+		var x = 0,
 			y;
 
+		this.grid = [];
+
 		for (; x < width; x++) {
-			grid[x] = [];
+			this.grid[x] = [];
 			for (y = 0; y < width; y++) {
-				grid[x][y] = _randomInt(nbColors);
+				this.grid[x][y] = _randomInt(nbColors);
 			}
 		}
-
-		return grid;
 	};
 
 	/**
 	 * Display the grid in the canvas
 	 */
-	var _displayGrid = function(grid, colors, init) {
+	var _displayGrid = function(init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
 			canvasHeight = this.ctx.canvas.clientHeight,
-			gridWidth = grid[0].length,
+			gridWidth = this.grid[0].length,
 			x, y, contX, contY,
 			color,
 			_displayCell;
 
 		this.cellSize = canvasWidth / (gridWidth + 2);
 
-		_displayCell = function(grid, color, x, y) {
-			color = colors[grid[x][y]];
+		_displayCell = function(x, y) {
+			var color = this.colors[this.grid[x][y]];
 			this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
 			this.ctx.fillRect((x + 1) * this.cellSize, (y + 1) * this.cellSize, this.cellSize, this.cellSize);
 		};
@@ -179,7 +177,7 @@
 			}
 
 			for (y = 0; y < gridWidth; y++) {
-				_displayCell.apply(this, [grid, color, x, y]);
+				_displayCell.apply(this, [x, y]);
 			}
 		}
 	};
