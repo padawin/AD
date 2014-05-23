@@ -1,15 +1,63 @@
 (function() {
+	var arrow = document.createElement('canvas'),
+		controlSize = 100,
+		controlThird = controlSize / 3,
+		controlTwoThird = controlThird * 2,
+		controlHalf = controlSize / 2,
+		controls = [
+			[
+				document.createElement('img'),
+				[controlThird, controlThird],
+				[controlTwoThird, controlThird],
+				[controlHalf, controlTwoThird]
+			],
+			[
+				document.createElement('img'),
+				[controlTwoThird, controlThird],
+				[controlTwoThird, controlTwoThird],
+				[controlThird, controlHalf]
+			],
+			[
+				document.createElement('img'),
+				[controlThird, controlTwoThird],
+				[controlTwoThird, controlTwoThird],
+				[controlHalf, controlThird]
+			],
+			[
+				document.createElement('img'),
+				[controlThird, controlThird],
+				[controlThird, controlTwoThird],
+				[controlTwoThird, controlHalf]
+			]
+		],
+		ctx,
+		c;
+
+	if (!arrow.getContext) {
+		throw 'This browser does not support the use of canvas';
+	}
+
+	arrow.width = arrow.height = controlSize;
+	ctx = arrow.getContext('2d');
+
+	for (c in controls) {
+		ctx.fillStyle = '#888';
+		ctx.clearRect (0, 0, controlSize, controlSize);
+		ctx.strokeRect(0, 0, controlSize, controlSize);
+		ctx.beginPath();
+		ctx.moveTo(controls[c][1][0], controls[c][1][1]);
+		ctx.lineTo(controls[c][2][0], controls[c][2][1]);
+		ctx.lineTo(controls[c][3][0], controls[c][3][1]);
+		ctx.fill();
+		controls[c][0].src = arrow.toDataURL("image/png").replace("image/png", "image/octet-stream");
+	}
+
 	var ad = function(parent) {
 		if (parent.tagName != 'CANVAS') {
 			throw 'The parent element must be a canvas tag';
 		}
 
 		this.parent = parent;
-
-		if (!this.parent.getContext) {
-			throw 'This browser does not support the use of canvas';
-		}
-
 		this.ctx = this.parent.getContext('2d');
 		_init.apply(this, [4, 4]);
 	};
@@ -98,8 +146,7 @@
 			canvasHeight = this.ctx.canvas.clientHeight,
 			gridWidth = grid[0].length,
 			cellSize = canvasWidth / (gridWidth + 2),
-			x = 0,
-			y,
+			x, y,
 			color,
 			_displayCell;
 
@@ -109,7 +156,13 @@
 			this.ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, cellSize, cellSize);
 		};
 
-		for (; x < gridWidth; x++) {
+		for (x = 0; x < gridWidth; x++) {
+			// control buttons
+			this.ctx.drawImage(controls[0][0], (x + 1) * cellSize, 0, cellSize, cellSize);
+			this.ctx.drawImage(controls[1][0], canvasWidth - cellSize, (x + 1) * cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls[2][0], (x + 1) * cellSize, canvasHeight - cellSize, cellSize, cellSize);
+			this.ctx.drawImage(controls[3][0], 0, (x + 1) * cellSize, cellSize, cellSize);
+
 			for (y = 0; y < gridWidth; y++) {
 				_displayCell.apply(this, [grid, color, x, y]);
 			}
