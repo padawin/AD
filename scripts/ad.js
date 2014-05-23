@@ -90,6 +90,9 @@
 		return grid;
 	};
 
+	/**
+	 * Display the grid in the canvas
+	 */
 	var _displayGrid = function(grid, colors) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
 			canvasHeight = this.ctx.canvas.clientHeight,
