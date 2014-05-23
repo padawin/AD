@@ -38,11 +38,6 @@
 		}
 
 		this.parent = parent;
-
-		if (!this.parent.getContext) {
-			throw 'This browser does not support the use of canvas';
-		}
-
 		this.ctx = this.parent.getContext('2d');
 		_init.apply(this, [4, 4]);
 	};
