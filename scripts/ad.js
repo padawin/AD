@@ -11,8 +11,15 @@
 		}
 
 		this.ctx = this.parent.getContext('2d');
+		_init.apply(this, [4, 4]);
 	};
 
+	var _init = function(gridWidth, nbColors) {
+		var colors = _generateColors.apply(this, [nbColors]),
+			grid = _generateGrid.apply(this, [gridWidth, nbColors]);
+
+		_displayGrid.apply(this, [grid, colors]);
+	};
 
 	var _randomInt = function(maxExcluded) {
 		return 0 | Math.random() * maxExcluded;
