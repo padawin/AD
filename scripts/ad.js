@@ -201,9 +201,58 @@
 		};
 
 		B.addEvent(this.parent, 'click', function(e){
-			var button = _onControl.apply(this, [e.layerX, e.layerY]);
+			var button = _onControl.apply(this, [e.layerX, e.layerY]),
+				_shiftDown, _shiftRight, _shiftLeft, _shiftUp;
 			if (button == null) return;
 
+			_shiftDown = function(col) {
+				var last = this.grid[col][this.grid[col].length - 1];
+				this.grid[col].pop();
+				this.grid[col].unshift(last);
+			};
+			_shiftRight = function(row) {
+				var old1, old2, r;
+				for (r in this.grid) {
+					old1 = this.grid[r][row];
+					if (old2 != null) {
+						this.grid[r][row] = old2;
+					}
+					else {
+						this.grid[r][row] = this.grid[(r - 1 + this.grid.length) % this.grid.length][row];
+					}
+					old2 = old1;
+				}
+			};
+			_shiftUp = function(col) {
+				var first = this.grid[col][0];
+				this.grid[col].shift();
+				this.grid[col].push(first);
+			};
+			_shiftLeft = function(row) {
+				var r,
+					first = this.grid[0][row];
+				for (r in this.grid) {
+					this.grid[r][row] = this.grid[(parseInt(r) + 1) % this.grid.length][row];
+				}
+				this.grid[this.grid.length - 1][row] = first;
+			};
+
+			switch (button % 4) {
+				case 0:
+					_shiftDown.apply(this, [button/4]);
+					break;
+				case 1:
+					_shiftRight.apply(this, [0|button/4]);
+					break;
+				case 2:
+					_shiftLeft.apply(this, [0|button/4]);
+					break;
+				case 3:
+					_shiftUp.apply(this, [0|button/4]);
+					break;
+			};
+
+			_displayGrid.apply(this, [false]);
 		}.bind(this));
 	};
 
