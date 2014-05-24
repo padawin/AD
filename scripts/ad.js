@@ -202,7 +202,8 @@
 
 		B.addEvent(this.parent, 'click', function(e){
 			var button = _onControl.apply(this, [e.layerX, e.layerY]),
-				_shiftDown, _shiftRight, _shiftLeft, _shiftUp;
+				_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
+				row;
 			if (button == null) return;
 
 			_shiftDown = function(col) {
@@ -231,18 +232,19 @@
 				this.grid[this.grid.length - 1][row] = first;
 			};
 
+			row = 0|button/4;
 			switch (button % 4) {
 				case 0:
-					_shiftDown.apply(this, [button/4]);
+					_shiftDown.apply(this, [row]);
 					break;
 				case 1:
-					_shiftRight.apply(this, [0|button/4]);
+					_shiftRight.apply(this, [row]);
 					break;
 				case 2:
-					_shiftLeft.apply(this, [0|button/4]);
+					_shiftLeft.apply(this, [row]);
 					break;
 				case 3:
-					_shiftUp.apply(this, [0|button/4]);
+					_shiftUp.apply(this, [row]);
 					break;
 			};
 
