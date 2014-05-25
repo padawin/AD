@@ -252,6 +252,9 @@
 
 			this._nbBlobs = _detectBlobs.apply(this);
 			_displayGrid.apply(this, [false]);
+
+			if (this._nbBlobs == this.nbColors) {
+			}
 		}.bind(this));
 	};
 
