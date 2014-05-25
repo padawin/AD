@@ -67,6 +67,7 @@
 		_generateColors.apply(this, [nbColors]);
 		_generateGrid.apply(this, [gridWidth, nbColors]);
 		_displayGrid.apply(this, [true]);
+		this._nbBlobs = _detectBlobs.apply(this);
 		_setEvents.apply(this);
 	};
 
@@ -116,6 +117,7 @@
 		}
 
 		this.colors = colors;
+		this.nbColors = colors.length;
 	};
 
 	/**
@@ -248,8 +250,60 @@
 					break;
 			};
 
+			this._nbBlobs = _detectBlobs.apply(this);
 			_displayGrid.apply(this, [false]);
+
+			if (this._nbBlobs == this.nbColors) {
+			}
 		}.bind(this));
+	};
+
+	var _detectBlobs = function() {
+		var blobs, nbBlobs = 0,
+			x, y, current,
+			width = this.grid.length,
+			height = this.grid[0].length,
+			nbCells = width * height,
+			north, west,
+			_setBlobsAndPropagate;
+
+		blobs = new Array(nbCells);
+
+		_setBlobsAndPropagate = function(x, y, id) {
+			var current = this.grid[x][y],
+				currentIndex = y * width + x,
+				north = currentIndex - width,
+				south = currentIndex + width,
+				east = currentIndex + 1,
+				west = currentIndex - 1;
+			blobs[currentIndex] = id;
+
+			if (north > 0 && blobs[north] == undefined && this.grid[x][y-1] == current) {
+				_setBlobsAndPropagate.apply(this, [x, y-1, id]);
+			}
+			if (east%width > currentIndex%width && blobs[east] == undefined && this.grid[x+1][y] == current) {
+				_setBlobsAndPropagate.apply(this, [x+1, y, id]);
+			}
+			if (south < nbCells && blobs[south] == undefined && this.grid[x][y+1] == current) {
+				_setBlobsAndPropagate.apply(this, [x, y+1, id]);
+			}
+			if (Math.abs(west%width) < currentIndex%width && blobs[west] == undefined && this.grid[x-1][y] == current) {
+				_setBlobsAndPropagate.apply(this, [x-1, y, id]);
+			}
+		};
+
+		for (x = 0; x < width; x++) {
+			for (y = 0; y < height; y++) {
+				if (blobs[y * width + x] != undefined) {
+					continue;
+				}
+
+				_setBlobsAndPropagate.apply(this, [x, y, nbBlobs]);
+				nbBlobs++;
+			}
+		}
+
+		return nbBlobs;
 	};
 
 	window.Ad = ad;
