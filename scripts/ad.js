@@ -250,6 +250,7 @@
 					break;
 			};
 
+			this._nbBlobs = _detectBlobs.apply(this);
 			_displayGrid.apply(this, [false]);
 		}.bind(this));
 	};
