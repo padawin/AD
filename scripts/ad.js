@@ -117,6 +117,7 @@
 		}
 
 		this.colors = colors;
+		this.nbColors = colors.length;
 	};
 
 	/**
