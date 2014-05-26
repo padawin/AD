@@ -1,30 +1,36 @@
 (function() {
-	var arrow = document.createElement('canvas'),
+	/**
+	 * Main script for the game AD. Uses canvas to display the game board.
+	 */
+
+	// Creation of the 4 arrows to move the rows and columns.
+	var d = document, createElement = 'createElement',
+		arrow = d[createElement]('canvas'),
 		controlSize = 100,
 		controlThird = controlSize / 3,
 		controlTwoThird = controlThird * 2,
 		controlHalf = controlSize / 2,
 		controls = [
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlThird, controlThird],
 				[controlTwoThird, controlThird],
 				[controlHalf, controlTwoThird]
 			],
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlTwoThird, controlThird],
 				[controlTwoThird, controlTwoThird],
 				[controlThird, controlHalf]
 			],
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlThird, controlTwoThird],
 				[controlTwoThird, controlTwoThird],
 				[controlHalf, controlThird]
 			],
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlThird, controlThird],
 				[controlThird, controlTwoThird],
 				[controlTwoThird, controlHalf]
@@ -52,6 +58,9 @@
 		controls[c][0].src = arrow.toDataURL("image/png").replace("image/png", "image/octet-stream");
 	}
 
+	/**
+	 * Game construct
+	 */
 	var ad = function(parent) {
 		if (parent.tagName != 'CANVAS') {
 			throw 'The parent element must be a canvas tag';
@@ -63,6 +72,10 @@
 		_init.apply(this, [4, 4]);
 	};
 
+	/**
+	 * Method to init the game
+	 * Private method
+	 */
 	var _init = function(gridWidth, nbColors) {
 		_generateColors.apply(this, [nbColors]);
 		_generateGrid.apply(this, [gridWidth, nbColors]);
@@ -71,6 +84,11 @@
 		_setEvents.apply(this);
 	};
 
+	/**
+	 * Method to generate a random integer
+	 *
+	 * Private method
+	 */
 	var _randomInt = function(maxExcluded) {
 		return 0 | Math.random() * maxExcluded;
 	};
@@ -183,7 +201,13 @@
 		}
 	};
 
+	/**
+	 * Method to set the click event on the game, to move the controls.
+	 */
 	var _setEvents = function() {
+		/**
+		 * Method to check if the player clicked on a control.
+		 */
 		var _onControl = function(x, y) {
 			var b, nbButtons = this._controlButtons.length;
 
@@ -207,6 +231,9 @@
 				row;
 			if (button == null) return;
 
+			/**
+			 * Methods to move a row or column in the 4 directions
+			 */
 			_shiftDown = function(col) {
 				var last = this.grid[col][this.grid[col].length - 1];
 				this.grid[col].pop();
@@ -252,11 +279,16 @@
 			this._nbBlobs = _detectBlobs.apply(this);
 			_displayGrid.apply(this, [false]);
 
+			// Winning condition
 			if (this._nbBlobs == this.nbColors) {
 			}
 		}.bind(this));
 	};
 
+	/**
+	 * Method to detect the blobs (like in picture processing) in the board.
+	 * Returns the number of blobs of the board.
+	 */
 	var _detectBlobs = function() {
 		var blobs, nbBlobs = 0,
 			x, y, current,
