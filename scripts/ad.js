@@ -4,32 +4,33 @@
 	 */
 
 	// Creation of the 4 arrows to move the rows and columns.
-	var arrow = document.createElement('canvas'),
+	var d = document, createElement = 'createElement',
+		arrow = d[createElement]('canvas'),
 		controlSize = 100,
 		controlThird = controlSize / 3,
 		controlTwoThird = controlThird * 2,
 		controlHalf = controlSize / 2,
 		controls = [
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlThird, controlThird],
 				[controlTwoThird, controlThird],
 				[controlHalf, controlTwoThird]
 			],
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlTwoThird, controlThird],
 				[controlTwoThird, controlTwoThird],
 				[controlThird, controlHalf]
 			],
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlThird, controlTwoThird],
 				[controlTwoThird, controlTwoThird],
 				[controlHalf, controlThird]
 			],
 			[
-				document.createElement('img'),
+				d[createElement]('img'),
 				[controlThird, controlThird],
 				[controlThird, controlTwoThird],
 				[controlTwoThird, controlHalf]
