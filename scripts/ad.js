@@ -37,7 +37,22 @@
 			]
 		],
 		ctx,
-		c;
+		c,
+		und = undefined,
+		// attributes strings
+		cellSize = 'cellSize',
+		gridWidth = 'gridWidth',
+		grid = 'grid',
+
+		// Methods
+		ad,
+		_init,
+		_randomInt,
+		_generateColors,
+		_generateGrid,
+		_displayGrid,
+		_setEvents,
+		_detectBlobs;
 
 	if (!arrow.getContext) {
 		throw 'This browser does not support the use of canvas';
@@ -61,7 +76,7 @@
 	/**
 	 * Game construct
 	 */
-	var ad = function(parent) {
+	ad = function(parent) {
 		if (parent.tagName != 'CANVAS') {
 			throw 'The parent element must be a canvas tag';
 		}
@@ -76,7 +91,7 @@
 	 * Method to init the game
 	 * Private method
 	 */
-	var _init = function(gridWidth, nbColors) {
+	_init = function(gridWidth, nbColors) {
 		_generateColors.apply(this, [nbColors]);
 		_generateGrid.apply(this, [gridWidth, nbColors]);
 		_displayGrid.apply(this, [true]);
@@ -89,7 +104,7 @@
 	 *
 	 * Private method
 	 */
-	var _randomInt = function(maxExcluded) {
+	_randomInt = function(maxExcluded) {
 		return 0 | Math.random() * maxExcluded;
 	};
 
@@ -98,9 +113,9 @@
 	 * The first color is randomly generated, the last one is the opposite of
 	 * the first one. The others are calculated with a lerp computation.
 	 */
-	var _generateColors = function(nb) {
+	_generateColors = function(nb) {
 		var colors = [],
-			c = 1,
+			c,
 			last = nb - 1,
 			percentColor,
 			_generateRandomColor,
@@ -119,13 +134,13 @@
 		};
 
 		colors[0] = _generateRandomColor();
-		colors[last] = [
-			(colors[0][0] + 128) % 256,
-			(colors[0][1] + 128) % 256,
-			(colors[0][2] + 128) % 256
-		];
+		colors[last] = [];
 
-		for (; c < last; c++) {
+		for (c = 0; c < 3; c++) {
+			colors[last].push((colors[0][c] + 128) % 256);
+		}
+
+		for (c = 1; c < last; c++) {
 			percentColor = c / last;
 			colors[c] = [
 				_lerp(colors[0][0], colors[last][0], percentColor),
@@ -144,16 +159,16 @@
 	 * The returned grid is a 2 dimensions array containing, for each cell, an
 	 * integer corresponding to the cell's color index (0, nbColors - 1)
 	 */
-	var _generateGrid = function(width, nbColors) {
+	_generateGrid = function(width, nbColors) {
 		var x, y;
 
-		this.grid = [];
-		this.gridWidth = width;
+		this[grid] = [];
+		this[gridWidth] = width;
 
 		for (x = 0; x < width; x++) {
-			this.grid[x] = [];
+			this[grid][x] = [];
 			for (y = 0; y < width; y++) {
-				this.grid[x][y] = _randomInt(nbColors);
+				this[grid][x][y] = _randomInt(nbColors);
 			}
 		}
 	};
@@ -161,41 +176,38 @@
 	/**
 	 * Display the grid in the canvas
 	 */
-	var _displayGrid = function(init) {
+	_displayGrid = function(init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
-			canvasHeight = this.ctx.canvas.clientHeight,
-			x, y, contX, contY,
-			color,
-			_displayCell;
+			x, y,
+			_displayCell,
+			_displayControl;
 
-		this.cellSize = canvasWidth / (this.gridWidth + 2);
+		this[cellSize] = canvasWidth / (this[gridWidth] + 2);
 
 		_displayCell = function(x, y) {
-			var color = this.colors[this.grid[x][y]];
+			var color = this.colors[this[grid][x][y]];
 			this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-			this.ctx.fillRect((x + 1) * this.cellSize, (y + 1) * this.cellSize, this.cellSize, this.cellSize);
+			this.ctx.fillRect((x + 1) * this[cellSize], (y + 1) * this[cellSize], this[cellSize], this[cellSize]);
 		};
 
+		_displayControl = function(contX, contY, ctrls, c, tmp) {
+			for (c = 0; c < ctrls.length; c++) {
+				this._controlButtons.push([contX, contY]);
+				this.ctx.drawImage(controls[ctrls[c]][0], contX, contY, this[cellSize], this[cellSize]);
+				tmp = contX;
+				contX = contY;
+				contY = tmp;
+			}
+		};
 
-		for (x = 0; x < this.gridWidth; x++) {
+		for (x = 0; x < this[gridWidth]; x++) {
 			if (init) {
 				// control buttons
-				// to factorize in a loop?
-				contX = (x + 1) * this.cellSize;
-				contY = 0;
-				this._controlButtons.push([contX, contY]);
-				this.ctx.drawImage(controls[0][0], contX, contY, this.cellSize, this.cellSize);
-				this._controlButtons.push([contY, contX]);
-				this.ctx.drawImage(controls[3][0], contY, contX, this.cellSize, this.cellSize);
-				contX = canvasWidth - this.cellSize;
-				contY = (x + 1) * this.cellSize;
-				this._controlButtons.push([contX, contY]);
-				this.ctx.drawImage(controls[1][0], contX, contY, this.cellSize, this.cellSize);
-				this._controlButtons.push([contY, contX]);
-				this.ctx.drawImage(controls[2][0], contY, contX, this.cellSize, this.cellSize);
+				_displayControl.apply(this, [(x + 1) * this[cellSize], 0, [0, 3]]);
+				_displayControl.apply(this, [canvasWidth - this[cellSize], (x + 1) * this[cellSize], [1, 2]]);
 			}
 
-			for (y = 0; y < this.gridWidth; y++) {
+			for (y = 0; y < this[gridWidth]; y++) {
 				_displayCell.apply(this, [x, y]);
 			}
 		}
@@ -204,7 +216,7 @@
 	/**
 	 * Method to set the click event on the game, to move the controls.
 	 */
-	var _setEvents = function() {
+	_setEvents = function() {
 		/**
 		 * Method to check if the player clicked on a control.
 		 */
@@ -214,9 +226,9 @@
 			for (b = 0; b < nbButtons; b++) {
 				if (
 					this._controlButtons[b][0] <= x
-					&& x <= this._controlButtons[b][0] + this.cellSize
+					&& x <= this._controlButtons[b][0] + this[cellSize]
 					&& this._controlButtons[b][1] <= y
-					&& y <= this._controlButtons[b][1] + this.cellSize
+					&& y <= this._controlButtons[b][1] + this[cellSize]
 				) {
 					break;
 				}
@@ -235,29 +247,29 @@
 			 * Methods to move a row or column in the 4 directions
 			 */
 			_shiftDown = function(col) {
-				var last = this.grid[col][this.grid[col].length - 1];
-				this.grid[col].pop();
-				this.grid[col].unshift(last);
+				var last = this[grid][col][this[grid][col].length - 1];
+				this[grid][col].pop();
+				this[grid][col].unshift(last);
 			};
 			_shiftRight = function(row) {
-				var old1, old2 = -1, r, last = this.grid.length - 1;
-				for (r in this.grid) {
-					old1 = this.grid[r][row];
-					this.grid[r][row] = ~old2 ? old2 : this.grid[(r + last) % this.grid.length][row];
+				var old1, old2 = -1, r, last = this[grid].length - 1;
+				for (r in this[grid]) {
+					old1 = this[grid][r][row];
+					this[grid][r][row] = ~old2 ? old2 : this[grid][(r + last) % this[grid].length][row];
 					old2 = old1;
 				}
 			};
 			_shiftUp = function(col) {
-				var first = this.grid[col][0];
-				this.grid[col].shift();
-				this.grid[col].push(first);
+				var first = this[grid][col][0];
+				this[grid][col].shift();
+				this[grid][col].push(first);
 			};
 			_shiftLeft = function(row) {
-				var r, first = this.grid[0][row];
-				for (r = 0; r < this.gridWidth; r++) {
-					this.grid[r][row] = this.grid[(parseInt(r) + 1) % this.grid.length][row];
+				var r, first = this[grid][0][row];
+				for (r = 0; r < this[gridWidth]; r++) {
+					this[grid][r][row] = this[grid][(parseInt(r) + 1) % this[grid].length][row];
 				}
-				this.grid[this.grid.length - 1][row] = first;
+				this[grid][this[grid].length - 1][row] = first;
 			};
 
 			row = 0|button/4;
@@ -289,41 +301,40 @@
 	 * Method to detect the blobs (like in picture processing) in the board.
 	 * Returns the number of blobs of the board.
 	 */
-	var _detectBlobs = function() {
+	_detectBlobs = function() {
 		var blobs, nbBlobs = 0,
-			x, y, current,
-			nbCells = this.gridWidth * this.gridWidth,
-			north, west,
+			x, y,
+			nbCells = this[gridWidth] * this[gridWidth],
 			_setBlobsAndPropagate;
 
 		blobs = new Array(nbCells);
 
 		_setBlobsAndPropagate = function(x, y, id) {
-			var current = this.grid[x][y],
-				currentIndex = y * this.gridWidth + x,
-				north = currentIndex - this.gridWidth,
-				south = currentIndex + this.gridWidth,
+			var current = this[grid][x][y],
+				currentIndex = y * this[gridWidth] + x,
+				north = currentIndex - this[gridWidth],
+				south = currentIndex + this[gridWidth],
 				east = currentIndex + 1,
 				west = currentIndex - 1;
 			blobs[currentIndex] = id;
 
-			if (north > 0 && blobs[north] == undefined && this.grid[x][y-1] == current) {
+			if (north > 0 && blobs[north] == und && this[grid][x][y-1] == current) {
 				_setBlobsAndPropagate.apply(this, [x, y-1, id]);
 			}
-			if (east%this.gridWidth > currentIndex%this.gridWidth && blobs[east] == undefined && this.grid[x+1][y] == current) {
+			if (east%this[gridWidth] > currentIndex%this[gridWidth] && blobs[east] == und && this[grid][x+1][y] == current) {
 				_setBlobsAndPropagate.apply(this, [x+1, y, id]);
 			}
-			if (south < nbCells && blobs[south] == undefined && this.grid[x][y+1] == current) {
+			if (south < nbCells && blobs[south] == und && this[grid][x][y+1] == current) {
 				_setBlobsAndPropagate.apply(this, [x, y+1, id]);
 			}
-			if (Math.abs(west%this.gridWidth) < currentIndex%this.gridWidth && blobs[west] == undefined && this.grid[x-1][y] == current) {
+			if (Math.abs(west%this[gridWidth]) < currentIndex%this[gridWidth] && blobs[west] == und && this[grid][x-1][y] == current) {
 				_setBlobsAndPropagate.apply(this, [x-1, y, id]);
 			}
 		};
 
-		for (x = 0; x < this.gridWidth; x++) {
-			for (y = 0; y < this.gridWidth; y++) {
-				if (blobs[y * this.gridWidth + x] != undefined) {
+		for (x = 0; x < this[gridWidth]; x++) {
+			for (y = 0; y < this[gridWidth]; y++) {
+				if (blobs[y * this[gridWidth] + x] != und) {
 					continue;
 				}
 
