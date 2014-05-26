@@ -42,7 +42,7 @@
 
 	ctx.fillStyle = '#888';
 	ctx.strokeRect(0, 0, controlSize, controlSize);
-	for (c in controls) {
+	for (c = 0; c < 4; c++) {
 		ctx.clearRect(1, 1, controlSize - 2, controlSize - 2);
 		ctx.beginPath();
 		ctx.moveTo(controls[c][1][0], controls[c][1][1]);
@@ -127,12 +127,12 @@
 	 * integer corresponding to the cell's color index (0, nbColors - 1)
 	 */
 	var _generateGrid = function(width, nbColors) {
-		var x = 0,
-			y;
+		var x, y;
 
 		this.grid = [];
+		this.gridWidth = width;
 
-		for (; x < width; x++) {
+		for (x = 0; x < width; x++) {
 			this.grid[x] = [];
 			for (y = 0; y < width; y++) {
 				this.grid[x][y] = _randomInt(nbColors);
@@ -146,12 +146,11 @@
 	var _displayGrid = function(init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
 			canvasHeight = this.ctx.canvas.clientHeight,
-			gridWidth = this.grid[0].length,
 			x, y, contX, contY,
 			color,
 			_displayCell;
 
-		this.cellSize = canvasWidth / (gridWidth + 2);
+		this.cellSize = canvasWidth / (this.gridWidth + 2);
 
 		_displayCell = function(x, y) {
 			var color = this.colors[this.grid[x][y]];
@@ -160,7 +159,7 @@
 		};
 
 
-		for (x = 0; x < gridWidth; x++) {
+		for (x = 0; x < this.gridWidth; x++) {
 			if (init) {
 				// control buttons
 				// to factorize in a loop?
@@ -178,7 +177,7 @@
 				this.ctx.drawImage(controls[2][0], contY, contX, this.cellSize, this.cellSize);
 			}
 
-			for (y = 0; y < gridWidth; y++) {
+			for (y = 0; y < this.gridWidth; y++) {
 				_displayCell.apply(this, [x, y]);
 			}
 		}
@@ -228,7 +227,7 @@
 			};
 			_shiftLeft = function(row) {
 				var r, first = this.grid[0][row];
-				for (r in this.grid) {
+				for (r = 0; r < this.gridWidth; r++) {
 					this.grid[r][row] = this.grid[(parseInt(r) + 1) % this.grid.length][row];
 				}
 				this.grid[this.grid.length - 1][row] = first;
@@ -261,9 +260,7 @@
 	var _detectBlobs = function() {
 		var blobs, nbBlobs = 0,
 			x, y, current,
-			width = this.grid.length,
-			height = this.grid[0].length,
-			nbCells = width * height,
+			nbCells = this.gridWidth * this.gridWidth,
 			north, west,
 			_setBlobsAndPropagate;
 
@@ -271,9 +268,9 @@
 
 		_setBlobsAndPropagate = function(x, y, id) {
 			var current = this.grid[x][y],
-				currentIndex = y * width + x,
-				north = currentIndex - width,
-				south = currentIndex + width,
+				currentIndex = y * this.gridWidth + x,
+				north = currentIndex - this.gridWidth,
+				south = currentIndex + this.gridWidth,
 				east = currentIndex + 1,
 				west = currentIndex - 1;
 			blobs[currentIndex] = id;
@@ -281,20 +278,20 @@
 			if (north > 0 && blobs[north] == undefined && this.grid[x][y-1] == current) {
 				_setBlobsAndPropagate.apply(this, [x, y-1, id]);
 			}
-			if (east%width > currentIndex%width && blobs[east] == undefined && this.grid[x+1][y] == current) {
+			if (east%this.gridWidth > currentIndex%this.gridWidth && blobs[east] == undefined && this.grid[x+1][y] == current) {
 				_setBlobsAndPropagate.apply(this, [x+1, y, id]);
 			}
 			if (south < nbCells && blobs[south] == undefined && this.grid[x][y+1] == current) {
 				_setBlobsAndPropagate.apply(this, [x, y+1, id]);
 			}
-			if (Math.abs(west%width) < currentIndex%width && blobs[west] == undefined && this.grid[x-1][y] == current) {
+			if (Math.abs(west%this.gridWidth) < currentIndex%this.gridWidth && blobs[west] == undefined && this.grid[x-1][y] == current) {
 				_setBlobsAndPropagate.apply(this, [x-1, y, id]);
 			}
 		};
 
-		for (x = 0; x < width; x++) {
-			for (y = 0; y < height; y++) {
-				if (blobs[y * width + x] != undefined) {
+		for (x = 0; x < this.gridWidth; x++) {
+			for (y = 0; y < this.gridWidth; y++) {
+				if (blobs[y * this.gridWidth + x] != undefined) {
 					continue;
 				}
 
