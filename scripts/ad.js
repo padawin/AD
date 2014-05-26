@@ -37,7 +37,11 @@
 			]
 		],
 		ctx,
-		c;
+		c,
+		und = undefined,
+		cellSize = 'cellSize',
+		gridWidth = 'gridWidth',
+		grid = 'grid';
 
 	if (!arrow.getContext) {
 		throw 'This browser does not support the use of canvas';
@@ -147,13 +151,13 @@
 	var _generateGrid = function(width, nbColors) {
 		var x, y;
 
-		this.grid = [];
-		this.gridWidth = width;
+		this[grid] = [];
+		this[gridWidth] = width;
 
 		for (x = 0; x < width; x++) {
-			this.grid[x] = [];
+			this[grid][x] = [];
 			for (y = 0; y < width; y++) {
-				this.grid[x][y] = _randomInt(nbColors);
+				this[grid][x][y] = _randomInt(nbColors);
 			}
 		}
 	};
@@ -163,39 +167,37 @@
 	 */
 	var _displayGrid = function(init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
-			canvasHeight = this.ctx.canvas.clientHeight,
 			x, y, contX, contY,
-			color,
 			_displayCell;
 
-		this.cellSize = canvasWidth / (this.gridWidth + 2);
+		this[cellSize] = canvasWidth / (this[gridWidth] + 2);
 
 		_displayCell = function(x, y) {
-			var color = this.colors[this.grid[x][y]];
+			var color = this.colors[this[grid][x][y]];
 			this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-			this.ctx.fillRect((x + 1) * this.cellSize, (y + 1) * this.cellSize, this.cellSize, this.cellSize);
+			this.ctx.fillRect((x + 1) * this[cellSize], (y + 1) * this[cellSize], this[cellSize], this[cellSize]);
 		};
 
 
-		for (x = 0; x < this.gridWidth; x++) {
+		for (x = 0; x < this[gridWidth]; x++) {
 			if (init) {
 				// control buttons
 				// to factorize in a loop?
-				contX = (x + 1) * this.cellSize;
+				contX = (x + 1) * this[cellSize];
 				contY = 0;
 				this._controlButtons.push([contX, contY]);
-				this.ctx.drawImage(controls[0][0], contX, contY, this.cellSize, this.cellSize);
+				this.ctx.drawImage(controls[0][0], contX, contY, this[cellSize], this[cellSize]);
 				this._controlButtons.push([contY, contX]);
-				this.ctx.drawImage(controls[3][0], contY, contX, this.cellSize, this.cellSize);
-				contX = canvasWidth - this.cellSize;
-				contY = (x + 1) * this.cellSize;
+				this.ctx.drawImage(controls[3][0], contY, contX, this[cellSize], this[cellSize]);
+				contX = canvasWidth - this[cellSize];
+				contY = (x + 1) * this[cellSize];
 				this._controlButtons.push([contX, contY]);
-				this.ctx.drawImage(controls[1][0], contX, contY, this.cellSize, this.cellSize);
+				this.ctx.drawImage(controls[1][0], contX, contY, this[cellSize], this[cellSize]);
 				this._controlButtons.push([contY, contX]);
-				this.ctx.drawImage(controls[2][0], contY, contX, this.cellSize, this.cellSize);
+				this.ctx.drawImage(controls[2][0], contY, contX, this[cellSize], this[cellSize]);
 			}
 
-			for (y = 0; y < this.gridWidth; y++) {
+			for (y = 0; y < this[gridWidth]; y++) {
 				_displayCell.apply(this, [x, y]);
 			}
 		}
@@ -214,9 +216,9 @@
 			for (b = 0; b < nbButtons; b++) {
 				if (
 					this._controlButtons[b][0] <= x
-					&& x <= this._controlButtons[b][0] + this.cellSize
+					&& x <= this._controlButtons[b][0] + this[cellSize]
 					&& this._controlButtons[b][1] <= y
-					&& y <= this._controlButtons[b][1] + this.cellSize
+					&& y <= this._controlButtons[b][1] + this[cellSize]
 				) {
 					break;
 				}
@@ -235,29 +237,29 @@
 			 * Methods to move a row or column in the 4 directions
 			 */
 			_shiftDown = function(col) {
-				var last = this.grid[col][this.grid[col].length - 1];
-				this.grid[col].pop();
-				this.grid[col].unshift(last);
+				var last = this[grid][col][this[grid][col].length - 1];
+				this[grid][col].pop();
+				this[grid][col].unshift(last);
 			};
 			_shiftRight = function(row) {
-				var old1, old2 = -1, r, last = this.grid.length - 1;
-				for (r in this.grid) {
-					old1 = this.grid[r][row];
-					this.grid[r][row] = ~old2 ? old2 : this.grid[(r + last) % this.grid.length][row];
+				var old1, old2 = -1, r, last = this[grid].length - 1;
+				for (r in this[grid]) {
+					old1 = this[grid][r][row];
+					this[grid][r][row] = ~old2 ? old2 : this[grid][(r + last) % this[grid].length][row];
 					old2 = old1;
 				}
 			};
 			_shiftUp = function(col) {
-				var first = this.grid[col][0];
-				this.grid[col].shift();
-				this.grid[col].push(first);
+				var first = this[grid][col][0];
+				this[grid][col].shift();
+				this[grid][col].push(first);
 			};
 			_shiftLeft = function(row) {
-				var r, first = this.grid[0][row];
-				for (r = 0; r < this.gridWidth; r++) {
-					this.grid[r][row] = this.grid[(parseInt(r) + 1) % this.grid.length][row];
+				var r, first = this[grid][0][row];
+				for (r = 0; r < this[gridWidth]; r++) {
+					this[grid][r][row] = this[grid][(parseInt(r) + 1) % this[grid].length][row];
 				}
-				this.grid[this.grid.length - 1][row] = first;
+				this[grid][this[grid].length - 1][row] = first;
 			};
 
 			row = 0|button/4;
@@ -291,39 +293,38 @@
 	 */
 	var _detectBlobs = function() {
 		var blobs, nbBlobs = 0,
-			x, y, current,
-			nbCells = this.gridWidth * this.gridWidth,
-			north, west,
+			x, y,
+			nbCells = this[gridWidth] * this[gridWidth],
 			_setBlobsAndPropagate;
 
 		blobs = new Array(nbCells);
 
 		_setBlobsAndPropagate = function(x, y, id) {
-			var current = this.grid[x][y],
-				currentIndex = y * this.gridWidth + x,
-				north = currentIndex - this.gridWidth,
-				south = currentIndex + this.gridWidth,
+			var current = this[grid][x][y],
+				currentIndex = y * this[gridWidth] + x,
+				north = currentIndex - this[gridWidth],
+				south = currentIndex + this[gridWidth],
 				east = currentIndex + 1,
 				west = currentIndex - 1;
 			blobs[currentIndex] = id;
 
-			if (north > 0 && blobs[north] == undefined && this.grid[x][y-1] == current) {
+			if (north > 0 && blobs[north] == und && this[grid][x][y-1] == current) {
 				_setBlobsAndPropagate.apply(this, [x, y-1, id]);
 			}
-			if (east%this.gridWidth > currentIndex%this.gridWidth && blobs[east] == undefined && this.grid[x+1][y] == current) {
+			if (east%this[gridWidth] > currentIndex%this[gridWidth] && blobs[east] == und && this[grid][x+1][y] == current) {
 				_setBlobsAndPropagate.apply(this, [x+1, y, id]);
 			}
-			if (south < nbCells && blobs[south] == undefined && this.grid[x][y+1] == current) {
+			if (south < nbCells && blobs[south] == und && this[grid][x][y+1] == current) {
 				_setBlobsAndPropagate.apply(this, [x, y+1, id]);
 			}
-			if (Math.abs(west%this.gridWidth) < currentIndex%this.gridWidth && blobs[west] == undefined && this.grid[x-1][y] == current) {
+			if (Math.abs(west%this[gridWidth]) < currentIndex%this[gridWidth] && blobs[west] == und && this[grid][x-1][y] == current) {
 				_setBlobsAndPropagate.apply(this, [x-1, y, id]);
 			}
 		};
 
-		for (x = 0; x < this.gridWidth; x++) {
-			for (y = 0; y < this.gridWidth; y++) {
-				if (blobs[y * this.gridWidth + x] != undefined) {
+		for (x = 0; x < this[gridWidth]; x++) {
+			for (y = 0; y < this[gridWidth]; y++) {
+				if (blobs[y * this[gridWidth] + x] != und) {
 					continue;
 				}
 
