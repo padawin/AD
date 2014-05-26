@@ -104,7 +104,7 @@
 	 */
 	var _generateColors = function(nb) {
 		var colors = [],
-			c = 1,
+			c,
 			last = nb - 1,
 			percentColor,
 			_generateRandomColor,
@@ -123,13 +123,13 @@
 		};
 
 		colors[0] = _generateRandomColor();
-		colors[last] = [
-			(colors[0][0] + 128) % 256,
-			(colors[0][1] + 128) % 256,
-			(colors[0][2] + 128) % 256
-		];
+		colors[last] = [];
 
-		for (; c < last; c++) {
+		for (c = 0; c < 3; c++) {
+			colors[last].push((colors[0][c] + 128) % 256);
+		}
+
+		for (c = 1; c < last; c++) {
 			percentColor = c / last;
 			colors[c] = [
 				_lerp(colors[0][0], colors[last][0], percentColor),
@@ -167,8 +167,9 @@
 	 */
 	var _displayGrid = function(init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
-			x, y, contX, contY,
-			_displayCell;
+			x, y,
+			_displayCell,
+			_displayControl;
 
 		this[cellSize] = canvasWidth / (this[gridWidth] + 2);
 
@@ -178,23 +179,21 @@
 			this.ctx.fillRect((x + 1) * this[cellSize], (y + 1) * this[cellSize], this[cellSize], this[cellSize]);
 		};
 
+		_displayControl = function(contX, contY, ctrls, c, tmp) {
+			for (c = 0; c < ctrls.length; c++) {
+				this._controlButtons.push([contX, contY]);
+				this.ctx.drawImage(controls[ctrls[c]][0], contX, contY, this[cellSize], this[cellSize]);
+				tmp = contX;
+				contX = contY;
+				contY = tmp;
+			}
+		};
 
 		for (x = 0; x < this[gridWidth]; x++) {
 			if (init) {
 				// control buttons
-				// to factorize in a loop?
-				contX = (x + 1) * this[cellSize];
-				contY = 0;
-				this._controlButtons.push([contX, contY]);
-				this.ctx.drawImage(controls[0][0], contX, contY, this[cellSize], this[cellSize]);
-				this._controlButtons.push([contY, contX]);
-				this.ctx.drawImage(controls[3][0], contY, contX, this[cellSize], this[cellSize]);
-				contX = canvasWidth - this[cellSize];
-				contY = (x + 1) * this[cellSize];
-				this._controlButtons.push([contX, contY]);
-				this.ctx.drawImage(controls[1][0], contX, contY, this[cellSize], this[cellSize]);
-				this._controlButtons.push([contY, contX]);
-				this.ctx.drawImage(controls[2][0], contY, contX, this[cellSize], this[cellSize]);
+				_displayControl.apply(this, [(x + 1) * this[cellSize], 0, [0, 3]]);
+				_displayControl.apply(this, [canvasWidth - this[cellSize], (x + 1) * this[cellSize], [1, 2]]);
 			}
 
 			for (y = 0; y < this[gridWidth]; y++) {
