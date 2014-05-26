@@ -42,7 +42,7 @@
 
 	ctx.fillStyle = '#888';
 	ctx.strokeRect(0, 0, controlSize, controlSize);
-	for (c in controls) {
+	for (c = 0; c < 4; c++) {
 		ctx.clearRect(1, 1, controlSize - 2, controlSize - 2);
 		ctx.beginPath();
 		ctx.moveTo(controls[c][1][0], controls[c][1][1]);
@@ -228,7 +228,7 @@
 			};
 			_shiftLeft = function(row) {
 				var r, first = this.grid[0][row];
-				for (r in this.grid) {
+				for (r = 0; r < this.gridWidth; r++) {
 					this.grid[r][row] = this.grid[(parseInt(r) + 1) % this.grid.length][row];
 				}
 				this.grid[this.grid.length - 1][row] = first;
