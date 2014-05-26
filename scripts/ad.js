@@ -127,13 +127,12 @@
 	 * integer corresponding to the cell's color index (0, nbColors - 1)
 	 */
 	var _generateGrid = function(width, nbColors) {
-		var x = 0,
-			y;
+		var x, y;
 
 		this.grid = [];
 		this.gridWidth = width;
 
-		for (; x < width; x++) {
+		for (x = 0; x < width; x++) {
 			this.grid[x] = [];
 			for (y = 0; y < width; y++) {
 				this.grid[x][y] = _randomInt(nbColors);
