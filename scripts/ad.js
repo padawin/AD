@@ -39,9 +39,20 @@
 		ctx,
 		c,
 		und = undefined,
+		// attributes strings
 		cellSize = 'cellSize',
 		gridWidth = 'gridWidth',
-		grid = 'grid';
+		grid = 'grid',
+
+		// Methods
+		ad,
+		_init,
+		_randomInt,
+		_generateColors,
+		_generateGrid,
+		_displayGrid,
+		_setEvents,
+		_detectBlobs;
 
 	if (!arrow.getContext) {
 		throw 'This browser does not support the use of canvas';
@@ -65,7 +76,7 @@
 	/**
 	 * Game construct
 	 */
-	var ad = function(parent) {
+	ad = function(parent) {
 		if (parent.tagName != 'CANVAS') {
 			throw 'The parent element must be a canvas tag';
 		}
@@ -80,7 +91,7 @@
 	 * Method to init the game
 	 * Private method
 	 */
-	var _init = function(gridWidth, nbColors) {
+	_init = function(gridWidth, nbColors) {
 		_generateColors.apply(this, [nbColors]);
 		_generateGrid.apply(this, [gridWidth, nbColors]);
 		_displayGrid.apply(this, [true]);
@@ -93,7 +104,7 @@
 	 *
 	 * Private method
 	 */
-	var _randomInt = function(maxExcluded) {
+	_randomInt = function(maxExcluded) {
 		return 0 | Math.random() * maxExcluded;
 	};
 
@@ -102,7 +113,7 @@
 	 * The first color is randomly generated, the last one is the opposite of
 	 * the first one. The others are calculated with a lerp computation.
 	 */
-	var _generateColors = function(nb) {
+	_generateColors = function(nb) {
 		var colors = [],
 			c,
 			last = nb - 1,
@@ -148,7 +159,7 @@
 	 * The returned grid is a 2 dimensions array containing, for each cell, an
 	 * integer corresponding to the cell's color index (0, nbColors - 1)
 	 */
-	var _generateGrid = function(width, nbColors) {
+	_generateGrid = function(width, nbColors) {
 		var x, y;
 
 		this[grid] = [];
@@ -165,7 +176,7 @@
 	/**
 	 * Display the grid in the canvas
 	 */
-	var _displayGrid = function(init) {
+	_displayGrid = function(init) {
 		var canvasWidth = this.ctx.canvas.clientWidth,
 			x, y,
 			_displayCell,
@@ -205,7 +216,7 @@
 	/**
 	 * Method to set the click event on the game, to move the controls.
 	 */
-	var _setEvents = function() {
+	_setEvents = function() {
 		/**
 		 * Method to check if the player clicked on a control.
 		 */
@@ -290,7 +301,7 @@
 	 * Method to detect the blobs (like in picture processing) in the board.
 	 * Returns the number of blobs of the board.
 	 */
-	var _detectBlobs = function() {
+	_detectBlobs = function() {
 		var blobs, nbBlobs = 0,
 			x, y,
 			nbCells = this[gridWidth] * this[gridWidth],
