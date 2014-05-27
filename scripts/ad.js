@@ -48,6 +48,8 @@
 		ad,
 		_init,
 		_createInformationsTable,
+		_getInformation,
+		_updateInformation,
 		_randomInt,
 		_generateColors,
 		_generateGrid,
@@ -101,6 +103,16 @@
 		Object.keys(this.infos).forEach(function(key) {
 			this.infos[key][1] = B.create('span', {text: this.infos[key][1]}, B.create('div', {text: this.infos[key][0] + ': '}, this.parent));
 		}.bind(this));
+	};
+
+	_getInformation = function(info) {
+		return this.infos[info] ? parseInt(this.infos[info][1].innerHTML) : false;
+	};
+
+	_updateInformation = function(info, value) {
+		if (!this.infos[info]) return false;
+
+		this.infos[info][1].innerHTML = value;
 	};
 
 	/**
