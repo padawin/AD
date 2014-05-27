@@ -265,7 +265,8 @@
 	};
 
 	_clickEvent = function(e){
-		var button = _onControl.apply(this, [e.layerX, e.layerY]),
+		var rect = this.ctx.canvas.getBoundingClientRect(),
+			button = _onControl.apply(this, [e.clientX - rect.left, e.clientY - rect.top]),
 			_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
 			row, nbBlobs;
 		if (button == null) return;
