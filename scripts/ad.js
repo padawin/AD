@@ -321,6 +321,7 @@
 
 		// Winning condition
 		if (nbBlobs == this.nbColors) {
+			B.removeEvent(this.parent, 'click', _clickEvent.bind(this));
 		}
 	};
 
