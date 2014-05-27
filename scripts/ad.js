@@ -47,6 +47,7 @@
 		// Methods
 		ad,
 		_init,
+		_createInformationsTable,
 		_randomInt,
 		_generateColors,
 		_generateGrid,
@@ -88,9 +89,18 @@
 		options = options || {};
 		size = options.size||300;
 		canvas = B.create('canvas', {width: size, height: size}, this.parent);
+
 		this.ctx = canvas.getContext('2d');
 		this._controlButtons = [],
 		_init.apply(this, [options.nbCellsSide||4, options.nbColors||4]);
+	};
+
+	_createInformationsTable = function() {
+		var infos = ['Blobs', 'Moves', 'Colors'],
+			i, colors = B.create('div', {text: 'Colors: ' + this.colors.length}, this.parent);
+
+		this.blobs = B.create('span', null, B.create('div', {text: 'Blobs: ' + this._nbBlobs}, this.parent));
+		this.moves = B.create('span', null, B.create('div', {text: 'Moves: 0'}, this.parent));
 	};
 
 	/**
@@ -102,6 +112,7 @@
 		_generateGrid.apply(this, [gridWidth, nbColors]);
 		_displayGrid.apply(this, [true]);
 		this._nbBlobs = _detectBlobs.apply(this);
+		_createInformationsTable.apply(this);
 		_setEvents.apply(this);
 	};
 
