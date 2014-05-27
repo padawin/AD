@@ -77,12 +77,14 @@
 	 * Game construct
 	 */
 	ad = function(parent) {
-		if (parent.tagName != 'CANVAS') {
-			throw 'The parent element must be a canvas tag';
+		if (parent.tagName != 'DIV') {
+			throw 'The parent element must be a div tag';
 		}
 
 		this.parent = parent;
-		this.ctx = this.parent.getContext('2d');
+		var size = 300,
+			canvas = B.create('canvas',{width: size, height: size},this.parent);
+		this.ctx = canvas.getContext('2d');
 		this._controlButtons = [],
 		_init.apply(this, [4, 4]);
 	};
