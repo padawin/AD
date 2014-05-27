@@ -54,6 +54,8 @@
 		_generateColors,
 		_generateGrid,
 		_displayGrid,
+		_clickEvent,
+		_onControl,
 		_setEvents,
 		_detectBlobs;
 
@@ -243,88 +245,90 @@
 	};
 
 	/**
+	 * Method to check if the player clicked on a control.
+	 */
+	_onControl = function(x, y) {
+		var b, nbButtons = this._controlButtons.length;
+
+		for (b = 0; b < nbButtons; b++) {
+			if (
+				this._controlButtons[b][0] <= x
+				&& x <= this._controlButtons[b][0] + this[cellSize]
+				&& this._controlButtons[b][1] <= y
+				&& y <= this._controlButtons[b][1] + this[cellSize]
+			) {
+				break;
+			}
+		}
+
+		return b == nbButtons ? null : b;
+	};
+
+	_clickEvent = function(e){
+		var button = _onControl.apply(this, [e.layerX, e.layerY]),
+			_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
+			row, nbBlobs;
+		if (button == null) return;
+
+		/**
+		 * Methods to move a row or column in the 4 directions
+		 */
+		_shiftDown = function(col) {
+			var last = this[grid][col][this[grid][col].length - 1];
+			this[grid][col].pop();
+			this[grid][col].unshift(last);
+		};
+		_shiftRight = function(row) {
+			var old1, old2 = -1, r, last = this[grid].length - 1;
+			for (r in this[grid]) {
+				old1 = this[grid][r][row];
+				this[grid][r][row] = ~old2 ? old2 : this[grid][(r + last) % this[grid].length][row];
+				old2 = old1;
+			}
+		};
+		_shiftUp = function(col) {
+			var first = this[grid][col][0];
+			this[grid][col].shift();
+			this[grid][col].push(first);
+		};
+		_shiftLeft = function(row) {
+			var r, first = this[grid][0][row];
+			for (r = 0; r < this[gridWidth]; r++) {
+				this[grid][r][row] = this[grid][(parseInt(r) + 1) % this[grid].length][row];
+			}
+			this[grid][this[grid].length - 1][row] = first;
+		};
+
+		row = 0|button/4;
+		switch (button % 4) {
+			case 0:
+				_shiftDown.apply(this, [row]);
+				break;
+			case 1:
+				_shiftRight.apply(this, [row]);
+				break;
+			case 2:
+				_shiftLeft.apply(this, [row]);
+				break;
+			case 3:
+				_shiftUp.apply(this, [row]);
+				break;
+		};
+
+		nbBlobs = _detectBlobs.apply(this);
+		_updateInformation.apply(this, ['moves', parseInt(_getInformation.apply(this, ['moves'])) + 1]);
+		_displayGrid.apply(this, [false]);
+
+		// Winning condition
+		if (nbBlobs == this.nbColors) {
+		}
+	};
+
+	/**
 	 * Method to set the click event on the game, to move the controls.
 	 */
 	_setEvents = function() {
-		/**
-		 * Method to check if the player clicked on a control.
-		 */
-		var _onControl = function(x, y) {
-			var b, nbButtons = this._controlButtons.length;
-
-			for (b = 0; b < nbButtons; b++) {
-				if (
-					this._controlButtons[b][0] <= x
-					&& x <= this._controlButtons[b][0] + this[cellSize]
-					&& this._controlButtons[b][1] <= y
-					&& y <= this._controlButtons[b][1] + this[cellSize]
-				) {
-					break;
-				}
-			}
-
-			return b == nbButtons ? null : b;
-		};
-
-		B.addEvent(this.parent, 'click', function(e){
-			var button = _onControl.apply(this, [e.layerX, e.layerY]),
-				_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
-				row, nbBlobs;
-			if (button == null) return;
-
-			/**
-			 * Methods to move a row or column in the 4 directions
-			 */
-			_shiftDown = function(col) {
-				var last = this[grid][col][this[grid][col].length - 1];
-				this[grid][col].pop();
-				this[grid][col].unshift(last);
-			};
-			_shiftRight = function(row) {
-				var old1, old2 = -1, r, last = this[grid].length - 1;
-				for (r in this[grid]) {
-					old1 = this[grid][r][row];
-					this[grid][r][row] = ~old2 ? old2 : this[grid][(r + last) % this[grid].length][row];
-					old2 = old1;
-				}
-			};
-			_shiftUp = function(col) {
-				var first = this[grid][col][0];
-				this[grid][col].shift();
-				this[grid][col].push(first);
-			};
-			_shiftLeft = function(row) {
-				var r, first = this[grid][0][row];
-				for (r = 0; r < this[gridWidth]; r++) {
-					this[grid][r][row] = this[grid][(parseInt(r) + 1) % this[grid].length][row];
-				}
-				this[grid][this[grid].length - 1][row] = first;
-			};
-
-			row = 0|button/4;
-			switch (button % 4) {
-				case 0:
-					_shiftDown.apply(this, [row]);
-					break;
-				case 1:
-					_shiftRight.apply(this, [row]);
-					break;
-				case 2:
-					_shiftLeft.apply(this, [row]);
-					break;
-				case 3:
-					_shiftUp.apply(this, [row]);
-					break;
-			};
-
-			nbBlobs = _detectBlobs.apply(this);
-			_updateInformation.apply(this, ['moves', parseInt(_getInformation.apply(this, ['moves'])) + 1]);
-			_displayGrid.apply(this, [false]);
-
-			// Winning condition
-			if (nbBlobs == this.nbColors) {
-			}
-		}.bind(this));
+		B.addEvent(this.parent, 'click', _clickEvent.bind(this));
 	};
 
 	/**
