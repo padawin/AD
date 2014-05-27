@@ -76,17 +76,18 @@
 	/**
 	 * Game construct
 	 */
-	ad = function(parent) {
+	ad = function(parent, options) {
 		if (parent.tagName != 'DIV') {
 			throw 'The parent element must be a div tag';
 		}
 
 		this.parent = parent;
-		var size = 300,
+		options = options || {};
+		var size = options.size||300,
 			canvas = B.create('canvas',{width: size, height: size},this.parent);
 		this.ctx = canvas.getContext('2d');
 		this._controlButtons = [],
-		_init.apply(this, [4, 4]);
+		_init.apply(this, [options.nbCellsSide||4, options.nbColors||4]);
 	};
 
 	/**
