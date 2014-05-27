@@ -123,8 +123,8 @@
 		_generateColors.apply(this, [nbColors]);
 		_generateGrid.apply(this, [gridWidth, nbColors]);
 		_displayGrid.apply(this, [true]);
-		this._nbBlobs = _detectBlobs.apply(this);
 		_createInformationsTable.apply(this);
+		_detectBlobs.apply(this);
 		_setEvents.apply(this);
 	};
 
@@ -269,7 +269,7 @@
 		B.addEvent(this.parent, 'click', function(e){
 			var button = _onControl.apply(this, [e.layerX, e.layerY]),
 				_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
-				row;
+				row, nbBlobs;
 			if (button == null) return;
 
 			/**
@@ -317,11 +317,11 @@
 					break;
 			};
 
-			this._nbBlobs = _detectBlobs.apply(this);
+			nbBlobs = _detectBlobs.apply(this);
 			_displayGrid.apply(this, [false]);
 
 			// Winning condition
-			if (this._nbBlobs == this.nbColors) {
+			if (nbBlobs == this.nbColors) {
 			}
 		}.bind(this));
 	};
