@@ -77,14 +77,17 @@
 	 * Game construct
 	 */
 	ad = function(parent, options) {
+		var tmp, size, canvas;
 		if (parent.tagName != 'DIV') {
-			throw 'The parent element must be a div tag';
+			tmp = B.create('div');
+			parent.parentNode.replaceChild(tmp, parent);
+			parent = tmp;
 		}
 
 		this.parent = parent;
 		options = options || {};
-		var size = options.size||300,
-			canvas = B.create('canvas', {width: size, height: size}, this.parent);
+		size = options.size||300;
+		canvas = B.create('canvas', {width: size, height: size}, this.parent);
 		this.ctx = canvas.getContext('2d');
 		this._controlButtons = [],
 		_init.apply(this, [options.nbCellsSide||4, options.nbColors||4]);
