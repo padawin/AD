@@ -96,11 +96,11 @@
 	};
 
 	_createInformationsTable = function() {
-		var infos = ['Blobs', 'Moves', 'Colors'],
-			i, colors = B.create('div', {text: 'Colors: ' + this.colors.length}, this.parent);
+		this.infos = {blobs: ['Blobs', 0], moves: ['Moves', 0], colors: ['Colors', this.colors.length]};
 
-		this.blobs = B.create('span', null, B.create('div', {text: 'Blobs: ' + this._nbBlobs}, this.parent));
-		this.moves = B.create('span', null, B.create('div', {text: 'Moves: 0'}, this.parent));
+		Object.keys(this.infos).forEach(function(key) {
+			this.infos[key][1] = B.create('span', {text: this.infos[key][1]}, B.create('div', {text: this.infos[key][0] + ': '}, this.parent));
+		}.bind(this));
 	};
 
 	/**
