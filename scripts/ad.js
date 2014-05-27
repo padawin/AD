@@ -84,7 +84,7 @@
 		this.parent = parent;
 		options = options || {};
 		var size = options.size||300,
-			canvas = B.create('canvas',{width: size, height: size},this.parent);
+			canvas = B.create('canvas', {width: size, height: size}, this.parent);
 		this.ctx = canvas.getContext('2d');
 		this._controlButtons = [],
 		_init.apply(this, [options.nbCellsSide||4, options.nbColors||4]);
