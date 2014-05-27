@@ -318,6 +318,7 @@
 			};
 
 			nbBlobs = _detectBlobs.apply(this);
+			_updateInformation.apply(this, ['moves', parseInt(_getInformation.apply(this, ['moves'])) + 1]);
 			_displayGrid.apply(this, [false]);
 
 			// Winning condition
@@ -372,6 +373,7 @@
 			}
 		}
 
+		_updateInformation.apply(this, ['blobs', nbBlobs]);
 		return nbBlobs;
 	};
 
