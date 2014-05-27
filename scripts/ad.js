@@ -47,6 +47,9 @@
 		// Methods
 		ad,
 		_init,
+		_createInformationsTable,
+		_getInformation,
+		_updateInformation,
 		_randomInt,
 		_generateColors,
 		_generateGrid,
@@ -76,15 +79,40 @@
 	/**
 	 * Game construct
 	 */
-	ad = function(parent) {
-		if (parent.tagName != 'CANVAS') {
-			throw 'The parent element must be a canvas tag';
+	ad = function(parent, options) {
+		var tmp, size, canvas;
+		if (parent.tagName != 'DIV') {
+			tmp = B.create('div');
+			parent.parentNode.replaceChild(tmp, parent);
+			parent = tmp;
 		}
 
 		this.parent = parent;
-		this.ctx = this.parent.getContext('2d');
+		options = options || {};
+		size = options.size||300;
+		canvas = B.create('canvas', {width: size, height: size}, this.parent);
+
+		this.ctx = canvas.getContext('2d');
 		this._controlButtons = [],
-		_init.apply(this, [4, 4]);
+		_init.apply(this, [options.nbCellsSide||4, options.nbColors||4]);
+	};
+
+	_createInformationsTable = function() {
+		this.infos = {blobs: ['Blobs', 0], moves: ['Moves', 0], colors: ['Colors', this.colors.length]};
+
+		Object.keys(this.infos).forEach(function(key) {
+			this.infos[key][1] = B.create('span', {text: this.infos[key][1]}, B.create('div', {text: this.infos[key][0] + ': '}, this.parent));
+		}.bind(this));
+	};
+
+	_getInformation = function(info) {
+		return this.infos[info] ? parseInt(this.infos[info][1].innerHTML) : false;
+	};
+
+	_updateInformation = function(info, value) {
+		if (!this.infos[info]) return false;
+
+		this.infos[info][1].innerHTML = value;
 	};
 
 	/**
@@ -95,7 +123,8 @@
 		_generateColors.apply(this, [nbColors]);
 		_generateGrid.apply(this, [gridWidth, nbColors]);
 		_displayGrid.apply(this, [true]);
-		this._nbBlobs = _detectBlobs.apply(this);
+		_createInformationsTable.apply(this);
+		_detectBlobs.apply(this);
 		_setEvents.apply(this);
 	};
 
@@ -240,7 +269,7 @@
 		B.addEvent(this.parent, 'click', function(e){
 			var button = _onControl.apply(this, [e.layerX, e.layerY]),
 				_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
-				row;
+				row, nbBlobs;
 			if (button == null) return;
 
 			/**
@@ -288,11 +317,12 @@
 					break;
 			};
 
-			this._nbBlobs = _detectBlobs.apply(this);
+			nbBlobs = _detectBlobs.apply(this);
+			_updateInformation.apply(this, ['moves', parseInt(_getInformation.apply(this, ['moves'])) + 1]);
 			_displayGrid.apply(this, [false]);
 
 			// Winning condition
-			if (this._nbBlobs == this.nbColors) {
+			if (nbBlobs == this.nbColors) {
 			}
 		}.bind(this));
 	};
@@ -343,6 +373,7 @@
 			}
 		}
 
+		_updateInformation.apply(this, ['blobs', nbBlobs]);
 		return nbBlobs;
 	};
 
