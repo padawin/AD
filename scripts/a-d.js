@@ -115,7 +115,7 @@
 	};
 
 	_getInformation = function(info) {
-		return this.infos[info] ? parseInt(this.infos[info][1].innerHTML) : false;
+		return this.infos[info] ? 0|this.infos[info][1].innerHTML : false;
 	};
 
 	_updateInformation = function(info, value) {
@@ -302,7 +302,7 @@
 		_shiftLeft = function(row) {
 			var r, first = this[grid][0][row];
 			for (r = 0; r < this[gridWidth]; r++) {
-				this[grid][r][row] = this[grid][(parseInt(r) + 1) % this[grid].length][row];
+				this[grid][r][row] = this[grid][(0|r + 1) % this[grid].length][row];
 			}
 			this[grid][this[grid].length - 1][row] = first;
 		};
@@ -324,7 +324,7 @@
 		};
 
 		nbBlobs = _detectBlobs.apply(this);
-		_updateInformation.apply(this, [moves, parseInt(_getInformation.apply(this, [moves])) + 1]);
+		_updateInformation.apply(this, [moves, 0|_getInformation.apply(this, [moves]) + 1]);
 		_displayGrid.apply(this, [false]);
 
 		// Winning condition
