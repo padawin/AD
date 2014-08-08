@@ -4,33 +4,43 @@
 	 */
 
 	// Creation of the 4 arrows to move the rows and columns.
-	var d = document, createElement = 'createElement',
-		arrow = d[createElement]('canvas'),
+	// attributes strings
+	var cellSize = 'cellSize',
+		gridWidth = 'gridWidth',
+		grid = 'grid',
+		sCanvas = 'canvas',
+		click = 'click',
+		img = 'img',
+		moves = 'moves',
+		pngMime = 'image/png',
+
+		d = document, createElement = 'createElement',
+		arrow = d[createElement](sCanvas),
 		controlSize = 100,
 		controlThird = controlSize / 3,
 		controlTwoThird = controlThird * 2,
 		controlHalf = controlSize / 2,
 		controls = [
 			[
-				d[createElement]('img'),
+				d[createElement](img),
 				[controlThird, controlThird],
 				[controlTwoThird, controlThird],
 				[controlHalf, controlTwoThird]
 			],
 			[
-				d[createElement]('img'),
+				d[createElement](img),
 				[controlTwoThird, controlThird],
 				[controlTwoThird, controlTwoThird],
 				[controlThird, controlHalf]
 			],
 			[
-				d[createElement]('img'),
+				d[createElement](img),
 				[controlThird, controlTwoThird],
 				[controlTwoThird, controlTwoThird],
 				[controlHalf, controlThird]
 			],
 			[
-				d[createElement]('img'),
+				d[createElement](img),
 				[controlThird, controlThird],
 				[controlThird, controlTwoThird],
 				[controlTwoThird, controlHalf]
@@ -39,10 +49,7 @@
 		ctx,
 		c,
 		und = undefined,
-		// attributes strings
-		cellSize = 'cellSize',
-		gridWidth = 'gridWidth',
-		grid = 'grid',
+		_256 = 256,
 
 		// Methods
 		ad,
@@ -75,7 +82,7 @@
 		ctx.lineTo(controls[c][2][0], controls[c][2][1]);
 		ctx.lineTo(controls[c][3][0], controls[c][3][1]);
 		ctx.fill();
-		controls[c][0].src = arrow.toDataURL("image/png").replace("image/png", "image/octet-stream");
+		controls[c][0].src = arrow.toDataURL(pngMime).replace(pngMime, "image/octet-stream");
 	}
 
 	/**
@@ -92,7 +99,7 @@
 		this.parent = parent;
 		options = options || {};
 		size = options.size||300;
-		canvas = B.create('canvas', {width: size, height: size}, this.parent);
+		canvas = B.create(sCanvas, {width: size, height: size}, this.parent);
 
 		this.ctx = canvas.getContext('2d');
 		this._controlButtons = [],
@@ -100,7 +107,7 @@
 	};
 
 	_createInformationsTable = function() {
-		this.infos = {blobs: ['Blobs', 0], moves: ['Moves', 0], colors: ['Colors', this.colors.length]};
+		this.infos = {blobs: ['Blobs', 0], moves: [moves, 0], colors: ['Colors', this.colors.length]};
 
 		Object.keys(this.infos).forEach(function(key) {
 			this.infos[key][1] = B.create('span', {text: this.infos[key][1]}, B.create('div', {text: this.infos[key][0] + ': '}, this.parent));
@@ -154,9 +161,9 @@
 
 		_generateRandomColor = function() {
 			return [
-				_randomInt(256),
-				_randomInt(256),
-				_randomInt(256)
+				_randomInt(_256),
+				_randomInt(_256),
+				_randomInt(_256)
 			]
 		};
 
@@ -168,7 +175,7 @@
 		colors[last] = [];
 
 		for (c = 0; c < 3; c++) {
-			colors[last].push((colors[0][c] + 128) % 256);
+			colors[last].push((colors[0][c] + 128) % _256);
 		}
 
 		for (c = 1; c < last; c++) {
@@ -317,12 +324,12 @@
 		};
 
 		nbBlobs = _detectBlobs.apply(this);
-		_updateInformation.apply(this, ['moves', parseInt(_getInformation.apply(this, ['moves'])) + 1]);
+		_updateInformation.apply(this, [moves, parseInt(_getInformation.apply(this, [moves])) + 1]);
 		_displayGrid.apply(this, [false]);
 
 		// Winning condition
 		if (nbBlobs == this.nbColors) {
-			B.removeEvent(this.parent, 'click', _clickEvent.bind(this));
+			B.removeEvent(this.parent, click, _clickEvent.bind(this));
 		}
 	};
 
@@ -330,7 +337,7 @@
 	 * Method to set the click event on the game, to move the controls.
 	 */
 	_setEvents = function() {
-		B.addEvent(this.parent, 'click', _clickEvent.bind(this));
+		B.addEvent(this.parent, click, _clickEvent.bind(this));
 	};
 
 	/**
