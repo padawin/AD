@@ -224,7 +224,7 @@
 
 		_displayCell = function(x, y) {
 			var color = this.colors[this[grid][x][y]];
-			this.ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+			this.ctx.fillStyle = 'rgb(' + color + ')';
 			this.ctx.fillRect((x + 1) * this[cellSize], (y + 1) * this[cellSize], this[cellSize], this[cellSize]);
 		};
 
