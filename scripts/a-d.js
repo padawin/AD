@@ -329,7 +329,7 @@
 
 		// Winning condition
 		if (nbBlobs == this.nbColors) {
-			B.removeEvent(this.parent, click, _clickEvent.bind(this));
+			B.off(this.parent, click, _clickEvent.bind(this));
 		}
 	};
 
@@ -337,7 +337,7 @@
 	 * Method to set the click event on the game, to move the controls.
 	 */
 	_setEvents = function() {
-		B.addEvent(this.parent, click, _clickEvent.bind(this));
+		B.on(this.parent, click, _clickEvent.bind(this));
 	};
 
 	/**
