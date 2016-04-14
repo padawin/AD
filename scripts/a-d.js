@@ -49,7 +49,13 @@
 		ctx,
 		c,
 		und = undefined,
+		// attributes strings
+		apply = "apply",
+		getContext = "getContext",
 		_256 = 256,
+		_Math = Math,
+		length = 'length',
+		_controlButtons = '_controlButtons',
 
 		// Methods
 		ad,
@@ -66,12 +72,12 @@
 		_setEvents,
 		_detectBlobs;
 
-	if (!arrow.getContext) {
+	if (!arrow[getContext]) {
 		throw 'This browser does not support the use of canvas';
 	}
 
 	arrow.width = arrow.height = controlSize;
-	ctx = arrow.getContext('2d');
+	ctx = arrow[getContext]('2d');
 
 	ctx.fillStyle = '#888';
 	ctx.strokeRect(0, 0, controlSize, controlSize);
@@ -101,9 +107,9 @@
 		size = options.size||300;
 		canvas = B.create(sCanvas, {width: size, height: size}, this.parent);
 
-		this.ctx = canvas.getContext('2d');
-		this._controlButtons = [],
-		_init.apply(this, [options.nbCellsSide||4, options.nbColors||4]);
+		this.ctx = canvas[getContext]('2d');
+		this[_controlButtons] = [],
+		_init[apply](this, [options.nbCellsSide||4, options.nbColors||4]);
 	};
 
 	_createInformationsTable = function() {
@@ -129,12 +135,12 @@
 	 * Private method
 	 */
 	_init = function(gridWidth, nbColors) {
-		_generateColors.apply(this, [nbColors]);
-		_generateGrid.apply(this, [gridWidth, nbColors]);
-		_displayGrid.apply(this, [true]);
-		_createInformationsTable.apply(this);
-		_detectBlobs.apply(this);
-		_setEvents.apply(this);
+		_generateColors[apply](this, [nbColors]);
+		_generateGrid[apply](this, [gridWidth, nbColors]);
+		_displayGrid[apply](this, [true]);
+		_createInformationsTable[apply](this);
+		_detectBlobs[apply](this);
+		_setEvents[apply](this);
 	};
 
 	/**
@@ -143,7 +149,7 @@
 	 * Private method
 	 */
 	_randomInt = function(maxExcluded) {
-		return 0 | Math.random() * maxExcluded;
+		return 0 | _Math.random() * maxExcluded;
 	};
 
 	/**
@@ -168,7 +174,7 @@
 		};
 
 		_lerp = function(val1, val2, ratio) {
-			return 0 | (Math.min(val1, val2) + Math.abs(val1 - val2) * ratio);
+			return 0 | (_Math.min(val1, val2) + _Math.abs(val1 - val2) * ratio);
 		};
 
 		colors[0] = _generateRandomColor();
@@ -188,7 +194,7 @@
 		}
 
 		this.colors = colors;
-		this.nbColors = colors.length;
+		this.nbColors = colors[length];
 	};
 
 	/**
@@ -229,8 +235,8 @@
 		};
 
 		_displayControl = function(contX, contY, ctrls, c, tmp) {
-			for (c = 0; c < ctrls.length; c++) {
-				this._controlButtons.push([contX, contY]);
+			for (c = 0; c < ctrls[length]; c++) {
+				this[_controlButtons].push([contX, contY]);
 				this.ctx.drawImage(controls[ctrls[c]][0], contX, contY, this[cellSize], this[cellSize]);
 				tmp = contX;
 				contX = contY;
@@ -241,12 +247,12 @@
 		for (x = 0; x < this[gridWidth]; x++) {
 			if (init) {
 				// control buttons
-				_displayControl.apply(this, [(x + 1) * this[cellSize], 0, [0, 3]]);
-				_displayControl.apply(this, [canvasWidth - this[cellSize], (x + 1) * this[cellSize], [1, 2]]);
+				_displayControl[apply](this, [(x + 1) * this[cellSize], 0, [0, 3]]);
+				_displayControl[apply](this, [canvasWidth - this[cellSize], (x + 1) * this[cellSize], [1, 2]]);
 			}
 
 			for (y = 0; y < this[gridWidth]; y++) {
-				_displayCell.apply(this, [x, y]);
+				_displayCell[apply](this, [x, y]);
 			}
 		}
 	};
@@ -273,7 +279,7 @@
 
 	_clickEvent = function(e){
 		var rect = this.ctx.canvas.getBoundingClientRect(),
-			button = _onControl.apply(this, [e.clientX - rect.left, e.clientY - rect.top]),
+			button = _onControl[apply](this, [e.clientX - rect.left, e.clientY - rect.top]),
 			_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
 			row, nbBlobs;
 		if (button == null) return;
@@ -310,16 +316,16 @@
 		row = 0|button/4;
 		switch (button % 4) {
 			case 0:
-				_shiftDown.apply(this, [row]);
+				_shiftDown[apply](this, [row]);
 				break;
 			case 1:
-				_shiftRight.apply(this, [row]);
+				_shiftRight[apply](this, [row]);
 				break;
 			case 2:
-				_shiftLeft.apply(this, [row]);
+				_shiftLeft[apply](this, [row]);
 				break;
 			case 3:
-				_shiftUp.apply(this, [row]);
+				_shiftUp[apply](this, [row]);
 				break;
 		};
 
@@ -362,16 +368,16 @@
 			blobs[currentIndex] = id;
 
 			if (north > 0 && blobs[north] == und && this[grid][x][y-1] == current) {
-				_setBlobsAndPropagate.apply(this, [x, y-1, id]);
+				_setBlobsAndPropagate[apply](this, [x, y-1, id]);
 			}
 			if (east%this[gridWidth] > currentIndex%this[gridWidth] && blobs[east] == und && this[grid][x+1][y] == current) {
-				_setBlobsAndPropagate.apply(this, [x+1, y, id]);
+				_setBlobsAndPropagate[apply](this, [x+1, y, id]);
 			}
 			if (south < nbCells && blobs[south] == und && this[grid][x][y+1] == current) {
-				_setBlobsAndPropagate.apply(this, [x, y+1, id]);
+				_setBlobsAndPropagate[apply](this, [x, y+1, id]);
 			}
-			if (Math.abs(west%this[gridWidth]) < currentIndex%this[gridWidth] && blobs[west] == und && this[grid][x-1][y] == current) {
-				_setBlobsAndPropagate.apply(this, [x-1, y, id]);
+			if (_Math.abs(west%this[gridWidth]) < currentIndex%this[gridWidth] && blobs[west] == und && this[grid][x-1][y] == current) {
+				_setBlobsAndPropagate[apply](this, [x-1, y, id]);
 			}
 		};
 
@@ -381,12 +387,12 @@
 					continue;
 				}
 
-				_setBlobsAndPropagate.apply(this, [x, y, nbBlobs]);
+				_setBlobsAndPropagate[apply](this, [x, y, nbBlobs]);
 				nbBlobs++;
 			}
 		}
 
-		_updateInformation.apply(this, ['blobs', nbBlobs]);
+		_updateInformation[apply](this, ['blobs', nbBlobs]);
 		return nbBlobs;
 	};
 
