@@ -2,6 +2,8 @@
 
 A scoring-puzzle game where the player has to group cells by color.
 
+![screenshot](screenshot.png "Awesome Dude!")
+
 ## Requirements
 
 To minify the code, yuicompressor-2.4.8.jar is required, available at
