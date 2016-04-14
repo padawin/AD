@@ -135,12 +135,13 @@
 	 * Private method
 	 */
 	_init = function(gridWidth, nbColors) {
-		_generateColors[apply](this, [nbColors]);
-		_generateGrid[apply](this, [gridWidth, nbColors]);
-		_displayGrid[apply](this, [true]);
-		_createInformationsTable[apply](this);
-		_detectBlobs[apply](this);
-		_setEvents[apply](this);
+		var that = this;
+		_generateColors[apply](that, [nbColors]);
+		_generateGrid[apply](that, [gridWidth, nbColors]);
+		_displayGrid[apply](that, [true]);
+		_createInformationsTable[apply](that);
+		_detectBlobs[apply](that);
+		_setEvents[apply](that);
 	};
 
 	/**
