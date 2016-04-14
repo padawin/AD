@@ -20,6 +20,7 @@
 		controlThird = controlSize / 3,
 		controlTwoThird = controlThird * 2,
 		controlHalf = controlSize / 2,
+		controlsLoaded = 0,
 		controls = [
 			[
 				d[createElement](img),
@@ -61,6 +62,7 @@
 		ad,
 		_init,
 		_createInformationsTable,
+		_createControlsImage,
 		_getInformation,
 		_updateInformation,
 		_randomInt,
@@ -79,17 +81,25 @@
 	arrow.width = arrow.height = controlSize;
 	ctx = arrow[getContext]('2d');
 
-	ctx.fillStyle = '#888';
-	ctx.strokeRect(0, 0, controlSize, controlSize);
-	for (c = 0; c < 4; c++) {
-		ctx.clearRect(1, 1, controlSize - 2, controlSize - 2);
-		ctx.beginPath();
-		ctx.moveTo(controls[c][1][0], controls[c][1][1]);
-		ctx.lineTo(controls[c][2][0], controls[c][2][1]);
-		ctx.lineTo(controls[c][3][0], controls[c][3][1]);
-		ctx.fill();
-		controls[c][0].src = arrow.toDataURL(pngMime).replace(pngMime, "image/octet-stream");
-	}
+	_createControlsImage = function (callback) {
+		ctx.fillStyle = '#888';
+		ctx.strokeRect(0, 0, controlSize, controlSize);
+		for (c = 0; c < 4; c++) {
+			ctx.clearRect(1, 1, controlSize - 2, controlSize - 2);
+			ctx.beginPath();
+			ctx.moveTo(controls[c][1][0], controls[c][1][1]);
+			ctx.lineTo(controls[c][2][0], controls[c][2][1]);
+			ctx.lineTo(controls[c][3][0], controls[c][3][1]);
+			ctx.fill();
+			controls[c][0].src = arrow.toDataURL(pngMime).replace(pngMime, "image/octet-stream");
+			controls[c][0].onload = function () {
+				controlsLoaded++;
+				if (controlsLoaded == controls.length) {
+					callback();
+				}
+			};
+		}
+	};
 
 	/**
 	 * Game construct
@@ -138,7 +148,9 @@
 		var that = this;
 		_generateColors[apply](that, [nbColors]);
 		_generateGrid[apply](that, [gridWidth, nbColors]);
-		_displayGrid[apply](that, [true]);
+		_createControlsImage(function () {
+			_displayGrid[apply](that, [true]);
+		});
 		_createInformationsTable[apply](that);
 		_detectBlobs[apply](that);
 		_setEvents[apply](that);
