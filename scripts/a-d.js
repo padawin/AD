@@ -86,7 +86,7 @@
 	_createControlsImage = function (callback) {
 		function _loadedResource() {
 			controlsLoaded++;
-			if (controlsLoaded == controls.length) {
+			if (controlsLoaded == controls[length]) {
 				callback();
 			}
 		}
@@ -126,7 +126,7 @@
 	};
 
 	_createInformationsTable = function() {
-		this.infos = {blobs: ['Blobs', 0], moves: [moves, 0], colors: ['Colors', this.colors.length]};
+		this.infos = {blobs: ['Blobs', 0], moves: [moves, 0], colors: ['Colors', this.colors[length]]};
 
 		Object.keys(this.infos).forEach(function(key) {
 			this.infos[key][1] = B.create('span', {text: this.infos[key][1]}, B.create('div', {text: this.infos[key][0] + ': '}, this.parent));
@@ -277,7 +277,7 @@
 	 * Method to check if the player clicked on a control.
 	 */
 	_onControl = function(x, y) {
-		var b, nbButtons = this._controlButtons.length;
+		var b, nbButtons = this._controlButtons[length];
 
 		for (b = 0; b < nbButtons; b++) {
 			if (
@@ -306,15 +306,15 @@
 		 * Methods to move a row or column in the 4 directions
 		 */
 		_shiftDown = function(col) {
-			var last = this[grid][col][this[grid][col].length - 1];
+			var last = this[grid][col][this[grid][col][length] - 1];
 			this[grid][col].pop();
 			this[grid][col].unshift(last);
 		};
 		_shiftRight = function(row) {
-			var old1, old2 = -1, r, last = this[grid].length - 1;
+			var old1, old2 = -1, r, last = this[grid][length] - 1;
 			for (r in this[grid]) {
 				old1 = this[grid][r][row];
-				this[grid][r][row] = ~old2 ? old2 : this[grid][(r + last) % this[grid].length][row];
+				this[grid][r][row] = ~old2 ? old2 : this[grid][(r + last) % this[grid][length]][row];
 				old2 = old1;
 			}
 		};
@@ -326,9 +326,9 @@
 		_shiftLeft = function(row) {
 			var r, first = this[grid][0][row];
 			for (r = 0; r < this[gridWidth]; r++) {
-				this[grid][r][row] = this[grid][(0|r + 1) % this[grid].length][row];
+				this[grid][r][row] = this[grid][(0|r + 1) % this[grid][length]][row];
 			}
-			this[grid][this[grid].length - 1][row] = first;
+			this[grid][this[grid][length] - 1][row] = first;
 		};
 
 		row = 0|button/4;
