@@ -2,6 +2,7 @@
 	/**
 	 * Main script for the game AD. Uses canvas to display the game board.
 	 */
+	'use strict';
 
 	// Creation of the 4 arrows to move the rows and columns.
 	// attributes strings
@@ -49,7 +50,8 @@
 		],
 		ctx,
 		c,
-		und = undefined,
+		// initialised by default to undefined
+		und,
 		// attributes strings
 		apply = "apply",
 		getContext = "getContext",
@@ -82,6 +84,12 @@
 	ctx = arrow[getContext]('2d');
 
 	_createControlsImage = function (callback) {
+		function _loadedResource() {
+			controlsLoaded++;
+			if (controlsLoaded == controls.length) {
+				callback();
+			}
+		}
 		ctx.fillStyle = '#888';
 		ctx.strokeRect(0, 0, controlSize, controlSize);
 		for (c = 0; c < 4; c++) {
@@ -92,12 +100,7 @@
 			ctx.lineTo(controls[c][3][0], controls[c][3][1]);
 			ctx.fill();
 			controls[c][0].src = arrow.toDataURL(pngMime).replace(pngMime, "image/octet-stream");
-			controls[c][0].onload = function () {
-				controlsLoaded++;
-				if (controlsLoaded == controls.length) {
-					callback();
-				}
-			};
+			controls[c][0].onload = _loadedResource;
 		}
 	};
 
@@ -118,8 +121,8 @@
 		canvas = B.create(sCanvas, {width: size, height: size}, this.parent);
 
 		this.ctx = canvas[getContext]('2d');
-		this[_controlButtons] = [],
-		_init[apply](this, [options.nbCellsSide||4, options.nbColors||4]);
+		this[_controlButtons] = [];
+		_init[apply](this, [options.nbCellsSide || 4, options.nbColors || 4]);
 	};
 
 	_createInformationsTable = function() {
@@ -183,7 +186,7 @@
 				_randomInt(_256),
 				_randomInt(_256),
 				_randomInt(_256)
-			]
+			];
 		};
 
 		_lerp = function(val1, val2, ratio) {
@@ -278,10 +281,10 @@
 
 		for (b = 0; b < nbButtons; b++) {
 			if (
-				this._controlButtons[b][0] <= x
-				&& x <= this._controlButtons[b][0] + this[cellSize]
-				&& this._controlButtons[b][1] <= y
-				&& y <= this._controlButtons[b][1] + this[cellSize]
+				this._controlButtons[b][0] <= x &&
+				x <= this._controlButtons[b][0] + this[cellSize] &&
+				this._controlButtons[b][1] <= y &&
+				y <= this._controlButtons[b][1] + this[cellSize]
 			) {
 				break;
 			}
@@ -295,7 +298,9 @@
 			button = _onControl[apply](this, [e.clientX - rect.left, e.clientY - rect.top]),
 			_shiftDown, _shiftRight, _shiftLeft, _shiftUp,
 			row, nbBlobs;
-		if (button == null) return;
+		if (button === null) {
+			return;
+		}
 
 		/**
 		 * Methods to move a row or column in the 4 directions
@@ -340,7 +345,7 @@
 			case 3:
 				_shiftUp[apply](this, [row]);
 				break;
-		};
+		}
 
 		nbBlobs = _detectBlobs.apply(this);
 		_updateInformation.apply(this, [moves, 0|_getInformation.apply(this, [moves]) + 1]);
